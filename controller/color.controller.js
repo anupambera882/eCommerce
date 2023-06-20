@@ -1,7 +1,7 @@
-const ProductCategoryService = require("../service/productCategory.service");
+const ColorService = require("../service/color.service");
 
-class ProductCategoryController {
-    static createProductCategory = async (req, res) => {
+class ColorController {
+    static createColor = async (req, res) => {
         try {
 
         } catch (err) {
@@ -13,7 +13,7 @@ class ProductCategoryController {
         }
     }
 
-    static updateProductCategory = async (req, res) => {
+    static updateColor = async (req, res) => {
         try {
 
         } catch (err) {
@@ -25,7 +25,7 @@ class ProductCategoryController {
         }
     }
 
-    static deleteProductCategory = async (req, res) => {
+    static deleteColor = async (req, res) => {
         try {
 
         } catch (err) {
@@ -37,7 +37,7 @@ class ProductCategoryController {
         }
     }
 
-    static getProductCategoryById = async (req, res) => {
+    static getColorById = async (req, res) => {
         try {
 
         } catch (err) {
@@ -49,7 +49,7 @@ class ProductCategoryController {
         }
     }
 
-    static getAllProductCategory = async (req, res) => {
+    static getAllColor = async (req, res) => {
         try {
 
         } catch (err) {
@@ -62,4 +62,4 @@ class ProductCategoryController {
     }
 }
 
-module.exports = ProductCategoryController;
+module.exports = ColorController;

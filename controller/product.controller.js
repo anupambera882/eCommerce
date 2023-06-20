@@ -238,6 +238,26 @@ class ProductController {
             });
         }
     }
+
+    static uploadImages = async (req, res) => {
+        try {
+
+        } catch (err) {
+            return res.status(500).json({
+
+            });
+        }
+    }
+
+    static deleteImages = async (req, res) => {
+        try {
+
+        } catch (err) {
+            return res.status(500).json({
+
+            });
+        }
+    }
 }
 
 module.exports = ProductController;

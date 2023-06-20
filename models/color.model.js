@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const { modelName } = require('./AllModelName');
 
-const brandSchema = new mongoose.Schema({
+const colorSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -17,4 +17,4 @@ const brandSchema = new mongoose.Schema({
     timestamps: true
 });
 
-module.exports = mongoose.model(modelName.BRAND, brandSchema);
+module.exports = mongoose.model(modelName.COLOR, colorSchema);

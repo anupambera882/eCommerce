@@ -77,10 +77,11 @@ const productSchema = new mongoose.Schema({
         default: [],
         required: true
     },
-    isDelete: {
+    isDeleted: {
         type: Boolean,
+        required: true,
         default: false
-    }
+    },
 }, {
     timestamps: true
 });
@@ -88,7 +89,7 @@ const productSchema = new mongoose.Schema({
 
 productSchema.pre(/^find/, function (next) {
     // Exclude soft-deleted products
-    this.find({ isDelete: { $ne: true } });
+    this.find({ isDeleted: { $ne: true } });
     next();
 });
 

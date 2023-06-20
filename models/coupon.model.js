@@ -15,6 +15,11 @@ const CouponSchema = new mongoose.Schema({
     discount: {
         type: Number,
         required: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps: true

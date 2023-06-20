@@ -43,4 +43,16 @@ function authorizeRole(roles) {
     };
 }
 
-module.exports = { authMiddleware, authorizeRole };
+// Check user is a block user or not
+const isBlock = async (req, res, next) => {
+    if (req.user.isBlocked === true) {
+        return res.status(401).json({
+            success: false,
+            message: 'You are block now try after some time'
+        });
+    }
+    next();
+}
+
+
+module.exports = { authMiddleware, authorizeRole, isBlock };
