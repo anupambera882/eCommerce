@@ -8,6 +8,7 @@ const blogCategoryRoute = require('./blogCategory.route');
 const brandRoute = require('./brand.route');
 const couponRoute = require('./coupon.route');
 const enquiryRoute = require('./enquiry.route');
+const addressRoute = require('./address.route');
 
 
 module.exports = (app) => {
@@ -24,6 +25,7 @@ module.exports = (app) => {
     // All route
     app.use("/api/user", authRoute);
     app.use('/api/product', productRoute);
+    app.use('/api/address', addressRoute);
     app.use('/api/blog', blogRoute);
     app.use('/api/productCategory', productCategoryRoute);
     app.use('/api/blogCategory', blogCategoryRoute);
