@@ -17,4 +17,12 @@ const brandSchema = new mongoose.Schema({
     timestamps: true
 });
 
+
+brandSchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
+
 module.exports = mongoose.model(modelName.BRAND, brandSchema);

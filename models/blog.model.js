@@ -47,6 +47,11 @@ const blogSchema = new mongoose.Schema({
     author: {
         type: String,
         default: role.ADMIN
+    },
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     toJSON: {
@@ -57,6 +62,14 @@ const blogSchema = new mongoose.Schema({
     },
     timestamps: true
 });
+
+
+blogSchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
 
 //Export the model
 module.exports = mongoose.model(modelName.BLOG, blogSchema);

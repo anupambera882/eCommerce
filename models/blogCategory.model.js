@@ -7,9 +7,21 @@ const blogCategorySchema = new mongoose.Schema({
         required: true,
         unique: true,
         index: true,
+    },
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
     }
 }, {
     timestamps: true
+});
+
+
+blogCategorySchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
 });
 
 

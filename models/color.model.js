@@ -17,4 +17,12 @@ const colorSchema = new mongoose.Schema({
     timestamps: true
 });
 
+
+colorSchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
+
 module.exports = mongoose.model(modelName.COLOR, colorSchema);

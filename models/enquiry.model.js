@@ -19,7 +19,18 @@ const enquirySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    isDeleted: {
+        type: Boolean,
+        required: true,
+        default: false
+    }
 });
 
-//Export the model
+
+enquirySchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
+
 module.exports = mongoose.model(modelName.ENQUIRY, enquirySchema);
