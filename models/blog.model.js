@@ -33,16 +33,16 @@ const blogSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.USER,
-        // required: true
+        required: true
     }],
     dislike: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.USER,
-        // required: true
+        required: true
     }],
     Image: {
         type: String,
-        default: "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.shutterstock.com%2Fsearch%2Fblog&psig=AOvVaw14FPSlUMvNch3ZPC_jOV4R&ust=1687187015522000&source=images&cd=vfe&ved=0CBEQjRxqFwoTCOi-i8yLzf8CFQAAAAAdAAAAABAE"
+        required: true,
     },
     author: {
         type: String,

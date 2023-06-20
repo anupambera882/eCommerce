@@ -1,28 +1,28 @@
 const ProductModel = require('../models/product.model');
 
 class ProductService {
-    static createNewProduct = async (NewProductDetails) => {
-        const newProduct = new ProductModel(NewProductDetails);
+    static createNewProduct = async (newProductDetails) => {
+        const newProduct = new ProductModel(newProductDetails);
         const newProductSave = await newProduct.save();
         return newProductSave;
     }
 
     static getProductByPK = async (pk, select = 0) => {
         if (select) {
-            const ProductData = await ProductModel.findOne(pk, select);
-            return ProductData;
+            const productData = await ProductModel.findOne(pk, select);
+            return productData;
         }
-        const ProductData = await ProductModel.findOne(pk);
-        return ProductData;
+        const productData = await ProductModel.findOne(pk);
+        return productData;
     }
 
     static getAllProduct = async (filter, skip, limit, select = 0) => {
         if (filter) {
-            const ProductsData = await ProductModel.find(filter, select).skip(skip).limit(limit);
-            return ProductsData;
+            const productsData = await ProductModel.find(filter, select).skip(skip).limit(limit);
+            return productsData;
         }
-        const ProductsData = await ProductModel.find().skip(skip).limit(limit);
-        return ProductsData;
+        const productsData = await ProductModel.find().skip(skip).limit(limit);
+        return productsData;
     }
 
     static updateProductDetailsById = async (id, updateData) => {

@@ -130,9 +130,7 @@ class UserController {
                 });
             }
 
-            const accessToken = await generateToken(
-                { userId: userData.id, email: userData.email, mobile: userData.mobile, role: userData.role },
-                process.env.ACCESS_TOKEN_SECRET_KEY, process.env.ACCESS_TOKEN_EXPIRATION_TIME);
+            const accessToken = await generateToken({ userId: userData.id, email: userData.email, mobile: userData.mobile, role: userData.role, isBlocked: userData.isBlocked }, process.env.ACCESS_TOKEN_SECRET_KEY, process.env.ACCESS_TOKEN_EXPIRATION_TIME);
 
             return res.status(202).json({
                 success: true,
@@ -457,7 +455,7 @@ class UserController {
         }
     }
 
-    static loginAdmin = async(req,res) => {
+    static loginAdmin = async (req, res) => {
         try {
 
         } catch (err) {

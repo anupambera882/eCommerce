@@ -1,8 +1,8 @@
 const { UserModel } = require("../models/user.model");
 
 class UserService {
-    static createNewUser = async (NewUserDetails) => {
-        const newUser = new UserModel(NewUserDetails);
+    static createNewUser = async (newUserDetails) => {
+        const newUser = new UserModel(newUserDetails);
         const newUserSave = await newUser.save();
         return newUserSave;
     }

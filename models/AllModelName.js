@@ -3,12 +3,12 @@ const modelName = {
     PRODUCT: 'Product',
     BLOG: 'Blog',
     ORDER: 'Order',
-    ADDRESS: 'Address',
     CART: 'Cart',
     COUPON: 'Coupon',
     BLOG_CATEGORY: 'BlogCategory',
     PRODUCT_CATEGORY: 'ProductCategory',
-    CATEGORY: 'Category'
+    BRAND: 'Brand',
+    ADDRESS: 'Address',
 }
 
 module.exports = { modelName };

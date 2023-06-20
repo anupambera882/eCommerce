@@ -31,7 +31,7 @@ const productSchema = new mongoose.Schema({
     brand: {
         type: String,
         required: true,
-        enum: ['Apple', 'Samsung']
+        // enum: ['Apple', 'Samsung']
     },
     quantity: {
         type: Number,
@@ -70,7 +70,7 @@ const productSchema = new mongoose.Schema({
     },
     thumbnail: {
         type: String,
-        // required: true,
+        required: true,
     },
     images: {
         type: Array,
