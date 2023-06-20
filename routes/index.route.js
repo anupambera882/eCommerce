@@ -3,18 +3,18 @@ const cookieParser = require('cookie-parser');
 const authRoute = require('./auth.route');
 const productRoute = require('./product.route');
 const blogRoute = require('./blog.route');
-const categoryRoute = require('./category.route');
-const multerMiddleware = require('../middleware/multer.middleware');
+const productCategoryRoute = require('./productCategory.route');
+const blogCategoryRoute = require('./blogCategory.route');
+const brandRoute = require('./brand.route');
+const couponRoute = require('./coupon.route');
+const enquiryRoute = require('./enquiry.route');
+
 
 module.exports = (app) => {
 
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
-
-    // Multer error handling middleware
-    app.use('/api/product', multerMiddleware);
-
 
     // Route For testing
     app.get('/', (req, res) => {
@@ -25,7 +25,12 @@ module.exports = (app) => {
     app.use("/api/user", authRoute);
     app.use('/api/product', productRoute);
     app.use('/api/blog', blogRoute);
-    app.use('/api/category', categoryRoute);
+    app.use('/api/productCategory', productCategoryRoute);
+    app.use('/api/blogCategory', blogCategoryRoute);
+    app.use('/api/brand', brandRoute);
+    app.use('/api/coupon', couponRoute);
+    app.use('/api/enquiry', enquiryRoute);
+
 
     // manage if any unknown request is coming or a bad request coming
     app.use('*', async (req, res) => {
