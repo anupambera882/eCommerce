@@ -29,6 +29,12 @@ class UserController {
             const newUserSave = await UserService.createNewUser(newUser);
             const refreshToken = await generateToken({ id: newUserSave._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
             await UserService.updateUserDetailsById(newUserSave._id, { $push: { refreshToken: refreshToken } });
+            await transporter.sendMail({
+                from: process.env.EMAIL_FROM,
+                to: newUserSave.email,
+                subject: "welcome to mycommerce",
+                html: `<h1> Thank You for register in mycommerce</h1>`
+            })
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -297,7 +303,7 @@ class UserController {
             await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: userData.email,
-                subject: "piCommerce - Password Reset Link",
+                subject: "mycommerce - Password Reset Link",
                 html: `<a href=${link}>Click Here</a> to Reset Your Password`
             })
             return res.status(200).json({
@@ -360,7 +366,7 @@ class UserController {
             await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: userData.email,
-                subject: "piCommerce - Reactive Account Link",
+                subject: "mycommerce - Reactive Account Link",
                 html: `<a href=${link}>Click Here</a> to Reactive Your Account Within 72 hours`
             });
 
