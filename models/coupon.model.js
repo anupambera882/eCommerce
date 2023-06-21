@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const modelName = require('./AllModelName');
+const { modelName } = require('./AllModelName');
 
 const CouponSchema = new mongoose.Schema({
     name: {

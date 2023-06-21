@@ -9,7 +9,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Database Connection
-await dbConnect();
+dbConnect();
 
 // Serve Static file
 app.use(express.static(path.join(__dirname, 'public')));
