@@ -275,7 +275,7 @@ class UserController {
                 });
             }
 
-            await UserService.updateUserDetailsById(userData.id, { $set: { password: newPassword } })
+            await UserService.updateUserDetailsById(userData.id, { $set: { password: newPassword, refreshToken: [] } });
             return res.status(201).json({
                 success: true,
                 message: "Password changed successfully"

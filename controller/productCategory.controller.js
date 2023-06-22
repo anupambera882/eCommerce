@@ -3,7 +3,7 @@ const ProductCategoryService = require("../service/productCategory.service");
 class ProductCategoryController {
     static createProductCategory = async (req, res) => {
         try {
-
+            
         } catch (err) {
             return res.status(500).json({
                 success: false,

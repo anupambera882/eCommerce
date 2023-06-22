@@ -35,7 +35,7 @@ const blogSchema = new mongoose.Schema({
         ref: modelName.USER,
         required: true
     }],
-    dislike: [{
+    dislikes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.USER,
         required: true

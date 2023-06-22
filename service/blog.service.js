@@ -7,16 +7,16 @@ class BlogService {
         return newBlogSave;
     }
 
-    static getBlogByPK = async (pk, select = 0) => {
-        if (select) {
-            const blogData = await BlogModel.findOne(pk, select);
+    static getBlogByPK = async (pk, populate = 0) => {
+        if (populate) {
+            const blogData = await BlogModel.findOne(pk).populate('likes').populate('dislikes');
             return blogData;
         }
         const blogData = await BlogModel.findOne(pk);
         return blogData;
     }
 
-    static getAllBlog = async (filter, skip, limit, select = 0) => {
+    static getAllBlog = async (select = 0) => {
         if (filter) {
             const blogsData = await BlogModel.find(filter, select).skip(skip).limit(limit);
             return blogsData;
@@ -26,11 +26,10 @@ class BlogService {
     }
 
     static updateBlogDetailsById = async (id, updateData) => {
-        const updateBlogData = await BlogModel.findByIdAndUpdate(id, {
-            $set: updateData
-        }, {
-            new: true
-        });
+        const updateBlogData = await BlogModel.findByIdAndUpdate(id, updateData,
+            {
+                new: true
+            });
         return updateBlogData;
     }
 }

@@ -6,14 +6,9 @@ class ProductController {
 
     static createNewProduct = async (req, res) => {
         try {
-            const { title, description, price, brand, quantity, color } = req.body;
-            let { slug } = req.body;
-            let { thumbnail, images } = req.files;
-            thumbnail = thumbnail[0].path;
-            images.forEach((image) => {
-                image.push(image.path);
-            });
+            const { title, description, price, quantity } = req.body;
 
+            let { slug } = req.body;
             // Check duplicate slag 
             if (slug === undefined) {
                 slug = title.toLowerCase().split(" ").join("-");
@@ -45,29 +40,20 @@ class ProductController {
                 quantity: quantity,
                 color: color,
                 sellerId: req.user.userId,
-                thumbnail: thumbnail,
-                images: images
+                // thumbnail: thumbnail,
+                // images: images
             }
             const newProductSave = await ProductService.createNewProduct(newProduct);
 
             return res.status(201).json({
                 success: true,
                 successMessage: "Product register successfully",
-                data: {
-                    id: newProductSave._id,
-                    title: newProductSave.title,
-                    slug: newProductSave.slug,
-                    description: newProductSave.description,
-                    price: newProductSave.price,
-                    brand: newProductSave.brand,
-                    quantity: newProductSave.quantity,
-                }
+                newProduct: newProductSave
             });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to add new data",
-                message: "",
+                message: "Unable to add new product",
                 errMessage: err.message
             });
         }
@@ -155,7 +141,7 @@ class ProductController {
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Internal server error",
+                message: "can't get product",
                 errMessage: err.message
             });
         }
@@ -197,19 +183,13 @@ class ProductController {
                     message: 'You are not the owner in this product'
                 });
             }
-
             const product = await ProductService.updateProductDetailsById(productId, { isDelete: true });
-
             if (!product) {
                 return res.status(404).json({
                     success: false,
                     message: 'Product not found'
                 });
             }
-
-            product.images.forEach(async (image) => {
-                await deleteFile(image);
-            });
             return res.json({
                 success: true,
                 message: 'Product deleted successfully'
@@ -245,7 +225,11 @@ class ProductController {
 
     static uploadImages = async (req, res) => {
         try {
-
+            let { thumbnail, images } = req.files;
+            thumbnail = thumbnail[0].path;
+            images.forEach((image) => {
+                image.push(image.path);
+            });
         } catch (err) {
             return res.status(500).json({
 
@@ -255,7 +239,9 @@ class ProductController {
 
     static deleteImages = async (req, res) => {
         try {
-
+            product.images.forEach(async (image) => {
+                await deleteFile(image);
+            });
         } catch (err) {
             return res.status(500).json({
 
