@@ -24,14 +24,14 @@ const productSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
-        enum: [],
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelName.PRODUCT_CATEGORY
+        // required: true
     },
     brand: {
-        type: String,
-        required: true,
-        // enum: ['Apple', 'Samsung']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelName.BRAND,
+        // required: true,
     },
     quantity: {
         type: Number,
@@ -42,9 +42,9 @@ const productSchema = new mongoose.Schema({
         default: 0
     },
     color: {
-        type: String,
-        required: true,
-        // enum: ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red']
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelName.COLOR,
+        // required: true,
     },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -70,12 +70,12 @@ const productSchema = new mongoose.Schema({
     },
     thumbnail: {
         type: String,
-        required: true,
+        // required: true
     },
     images: {
         type: Array,
         default: [],
-        required: true
+        // required: true
     },
     isDeleted: {
         type: Boolean,

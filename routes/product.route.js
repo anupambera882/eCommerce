@@ -9,13 +9,13 @@ const fields = [{ name: 'thumbnail', maxCount: 1 }, { name: 'images', maxCount: 
 
 // Public Routes
 productRoute.get('/get-All-product', ProductController.getAllProducts);
-productRoute.get('/get-product', ProductController.getProductById);
+productRoute.get('/get-product/:productId', ProductController.getProductById);
 
 
 // Protected Routes
-productRoute.post('/add-product', [authMiddleware, authorizeRole([role.ADMIN]), upload.fields(fields), multerErrorHandlerMiddleware, productImgResize], ProductController.createNewProduct);
+productRoute.post('/add-product', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.createNewProduct);
 productRoute.post('/update-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.updateProductById);
 productRoute.post('/delete-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.deleteProductById);
-
+// , upload.fields(fields), multerErrorHandlerMiddleware, productImgResize
 
 module.exports = productRoute;

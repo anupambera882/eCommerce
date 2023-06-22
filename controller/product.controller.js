@@ -1,5 +1,6 @@
 const ProductService = require("../service/product.service");
 const { deleteFile } = require("../utils/deleteFile.util");
+const validateMongodbId = require("../utils/validateMongodbId.utils");
 
 class ProductController {
 
@@ -23,6 +24,7 @@ class ProductController {
                         message: "Please Enter your slag manually"
                     })
                 }
+                req.body.slug = slug;
             } else {
                 const productData = await ProductService.getProductByPK({ slug: slug });
                 if (productData) {
@@ -35,7 +37,7 @@ class ProductController {
 
             const newProduct = {
                 title: title,
-                slug: slug,
+                slug: req.body.slug,
                 description: description,
                 price: price,
                 category: category,
@@ -75,7 +77,7 @@ class ProductController {
         try {
             const { productId } = req.params;
             let { title, slug } = req.body;
-
+            validateMongodbId(productId, res);
             if (title) {
                 if (slug === undefined) {
                     slug = title.toLowerCase().split(" ").join("-");
@@ -133,7 +135,7 @@ class ProductController {
         try {
             const page = query.params.page || 1;
             const limit = query.query.limit || 10;
-            const { category, brand, price, color, rating, discountPercentage, title } = req.query;
+            const { category, brand, color, rating, discountPercentage, title } = req.query;
 
             const filter = {};
             const skip = (page - 1) * limit;
@@ -162,6 +164,7 @@ class ProductController {
     static getProductById = async (req, res) => {
         try {
             const { productId } = req.params;
+            validateMongodbId(productId, res);
             const product = await ProductService.getProductByPK({ _id: productId });
             if (!product) {
                 return res.status(404).json({
@@ -186,6 +189,7 @@ class ProductController {
     static deleteProductById = async (req, res) => {
         try {
             const { productId } = req.params;
+            validateMongodbId(productId, res);
             const productSellerId = await ProductService.getProductByPK({ _id: productId }, { sellerId: 1 });
             if (req.user.userId !== productSellerId.sellerId) {
                 return res.status(400).json({

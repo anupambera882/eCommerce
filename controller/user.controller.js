@@ -324,8 +324,9 @@ class UserController {
     }
 
     static userPasswordReset = async (req, res) => {
-        const { password } = req.body
-        const { id, token } = req.params
+        const { password } = req.body;
+        const { id, token } = req.params;
+        validateMongodbId(id, res);
         const user = await UserService.getUserByPK({ _id: id });
         const newSecret = user._id + process.env.ACCESS_TOKEN_SECRET_KEY;
         try {
