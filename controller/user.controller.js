@@ -1,13 +1,14 @@
 const { generateToken, verifyToken } = require('../config/jwt.config');
 const UserService = require('../service/user.service');
 const { transporter } = require('../config/email.config');
+const validateMongodbId = require('../utils/validateMongodbId.utils');
 const refreshTokenMaxSize = 5;
 const oneDay = 1000 * 60 * 60 * 24;
 
 class UserController {
     static createUser = async (req, res) => {
         try {
-            const { firstName, lastName, email, mobile, password } = req.body;
+            const { firstName, lastName, email, mobile, password, role } = req.body;
 
             // check duplicate user entry
             const checkEmail = await UserService.getUserByPK({ email: email });
@@ -25,6 +26,9 @@ class UserController {
                 email: email,
                 mobile: mobile,
                 password: password
+            }
+            if (role) {
+                newUser.role = role
             }
             const newUserSave = await UserService.createNewUser(newUser);
             const refreshToken = await generateToken({ id: newUserSave._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
@@ -427,7 +431,58 @@ class UserController {
     }
     static blockAUser = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            await UserService.updateUserDetailsById(id, {
+                $set: { isBlocked: true }
+            });
 
+            return res.status(200).json({
+                success: true,
+                message: 'user account block successfully'
+            })
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to block user Account",
+                errMessage: err.message
+            });
+        }
+    }
+
+    static unblockAUser = async (req, res) => {
+        try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            await UserService.updateUserDetailsById(id, {
+                $set: { isBlocked: false }
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: 'user account unblock successfully'
+            })
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to unblock user Account",
+                errMessage: err.message
+            });
+        }
+    }
+
+    static getAUser = async (req, res) => {
+        try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            const user = await UserService.getUserByPK({ _id: id });
+            if (!user) {
+                return res.sendStatus(204);
+            }
+            return res.status(201).json({
+                success: true,
+                user: user
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
@@ -437,13 +492,17 @@ class UserController {
         }
     }
 
-    static unblockAUser = async (req, res) => {
+    static getAllUser = async (req, res) => {
         try {
-
+            const allUser = await UserService.getAllUser();
+            return res.status(200).json({
+                success: true,
+                allUser: allUser
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to fetch user details",
                 errMessage: err.message
             });
         }

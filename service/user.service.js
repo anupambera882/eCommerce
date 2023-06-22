@@ -16,6 +16,15 @@ class UserService {
         return userData;
     }
 
+    static getAllUser = async (select = 0) => {
+        if (select) {
+            const AllUser = await UserModel.find(select);
+            return AllUser;
+        }
+        const AllUser = await UserModel.find();
+        return AllUser;
+    }
+
     static updateUserDetailsById = async (id, updateData) => {
         const updateUserData = await UserModel.findByIdAndUpdate(id, updateData,
             {
