@@ -16,12 +16,8 @@ class ProductService {
         return productData;
     }
 
-    static getAllProduct = async (filter, skip, limit, select = 0) => {
-        if (filter) {
-            const productsData = await ProductModel.find(filter, select).skip(skip).limit(limit);
-            return productsData;
-        }
-        const productsData = await ProductModel.find().skip(skip).limit(limit);
+    static getAllProduct = async () => {
+        const productsData = await ProductModel.find();
         return productsData;
     }
 

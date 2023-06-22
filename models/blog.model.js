@@ -51,7 +51,8 @@ const blogSchema = new mongoose.Schema({
     isDeleted: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
+        select: false
     }
 }, {
     toJSON: {

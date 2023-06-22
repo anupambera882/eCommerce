@@ -19,7 +19,8 @@ const CouponSchema = new mongoose.Schema({
     isDeleted: {
         type: Boolean,
         required: true,
-        default: false
+        default: false,
+        select: false
     }
 }, {
     timestamps: true

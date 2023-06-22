@@ -16,12 +16,8 @@ class BrandService {
         return brandData;
     }
 
-    static getAllBrand = async (filter, skip, limit, select = 0) => {
-        if (filter) {
-            const brandsData = await BrandModel.find(filter, select).skip(skip).limit(limit);
-            return brandsData;
-        }
-        const brandsData = await BrandModel.find().skip(skip).limit(limit);
+    static getAllBrand = async () => {
+        const brandsData = await BrandModel.find();
         return brandsData;
     }
 

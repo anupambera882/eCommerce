@@ -16,6 +16,8 @@ productRoute.get('/get-product/:productId', ProductController.getProductById);
 productRoute.post('/add-product', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.createNewProduct);
 productRoute.post('/update-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.updateProductById);
 productRoute.post('/delete-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.deleteProductById);
+productRoute.post('/wishList', [authMiddleware], ProductController.addToWishList);
+productRoute.post('/rating', [authMiddleware], ProductController.rating);
 // , upload.fields(fields), multerErrorHandlerMiddleware, productImgResize
 
 module.exports = productRoute;

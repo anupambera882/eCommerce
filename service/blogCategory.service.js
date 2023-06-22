@@ -16,12 +16,8 @@ class BlogCategoryService {
         return blogCategoryData;
     }
 
-    static getAllBlogCategory = async (filter, skip, limit, select = 0) => {
-        if (filter) {
-            const blogCategoriesData = await BlogCategoryModel.find(filter, select).skip(skip).limit(limit);
-            return blogCategoriesData;
-        }
-        const blogCategoriesData = await BlogCategoryModel.find().skip(skip).limit(limit);
+    static getAllBlogCategory = async () => {
+        const blogCategoriesData = await BlogCategoryModel.find();
         return blogCategoriesData;
     }
 

@@ -1,6 +1,8 @@
 const ProductService = require("../service/product.service");
+const UserService = require("../service/user.service");
 const { deleteFile } = require("../utils/deleteFile.util");
 const validateMongodbId = require("../utils/validateMongodbId.utils");
+
 
 class ProductController {
 
@@ -205,7 +207,27 @@ class ProductController {
 
     static addToWishList = async (req, res) => {
         try {
+            const { userId } = req.user;
+            const { productId } = req.body;
+            const user = await UserService.getUserByPK({ _id: userId });
 
+            const alreadyAdded = user.wishList.find((id) => {
+                id.toString() === productId
+            })
+
+            if (alreadyAdded) {
+                await UserService.updateUserDetailsById(userId, { $pull: { wishList: productId } });
+                return res.json({
+                    success: true,
+                    message: 'product remove successfully'
+                });
+            }
+
+            await UserService.updateUserDetailsById(userId, { $push: { wishList: productId } });
+            return res.json({
+                success: true,
+                message: 'product remove successfully'
+            });
         } catch (err) {
             return res.status(500).json({
 
@@ -215,7 +237,17 @@ class ProductController {
 
     static rating = async (req, res) => {
         try {
+            const { userId } = req.user;
+            const { star, productId } = req.body;
+            const product = await ProductService.getProductByPK({ _id: productId });
 
+            let alreadyRated = product.rating.find((userId) => {
+                userId.postedBy.toString() === userId.toString()
+            });
+
+            // if (alreadyRated) {
+            //     const updateRating = await ProductService.updateProductDetailsById(productId,)
+            // }
         } catch (err) {
             return res.status(500).json({
 

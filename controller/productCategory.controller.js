@@ -1,13 +1,21 @@
 const ProductCategoryService = require("../service/productCategory.service");
+const validateMongodbId = require("../utils/validateMongodbId.utils");
 
 class ProductCategoryController {
     static createProductCategory = async (req, res) => {
         try {
-            
+            const { title } = req.body;
+            const newProductCategory = ProductCategoryService.createNewProductCategory({ title: title });
+
+            return res.status(201).json({
+                success: true,
+                message: 'New product category created successfully',
+                category: newProductCategory
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "Unable to created new product category",
                 errMessage: err.message
             });
         }
@@ -15,11 +23,20 @@ class ProductCategoryController {
 
     static updateProductCategory = async (req, res) => {
         try {
+            const { id } = req.params;
+            const { title } = req.body;
+            validateMongodbId(id, res);
+            const updateCategory = await ProductCategoryService.updateProductCategoryDetailsById(id, { title: title });
 
+            return res.status(201).json({
+                success: true,
+                message: 'successfully update product category',
+                data: updateCategory
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to update product category",
                 errMessage: err.message
             });
         }
@@ -27,11 +44,18 @@ class ProductCategoryController {
 
     static deleteProductCategory = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            await ProductCategoryService.updateProductCategoryDetailsById(id, { isDeleted: true });
 
+            return res.status(201).json({
+                success: true,
+                message: 'successfully delete product category'
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to delete product category",
                 errMessage: err.message
             });
         }
@@ -39,11 +63,18 @@ class ProductCategoryController {
 
     static getProductCategoryById = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            const productCategory = await ProductCategoryService.getProductCategoryByPK({ _id: id });
 
+            return res.status(201).json({
+                success: true,
+                data: productCategory
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "can not get data",
                 errMessage: err.message
             });
         }
@@ -51,11 +82,18 @@ class ProductCategoryController {
 
     static getAllProductCategory = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            const allCategory = await ProductCategoryService.getAllProductCategory();
 
+            return res.status(201).json({
+                success: true,
+                data: allCategory
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "can not get data",
                 errMessage: err.message
             });
         }

@@ -1,6 +1,6 @@
 const express = require('express');
 const couponRoute = express.Router();
-const CouponService = require('../service/coupon.service');
+const CouponController = require('../controller/coupon.controller')
 const { authMiddleware, authorizeRole } = require('../middleware/auth.middleware');
 const { role } = require('../models/user.model');
 
