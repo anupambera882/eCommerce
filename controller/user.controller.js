@@ -1,12 +1,12 @@
 const uniqid = require('uniqid');
 const { generateToken, verifyToken } = require('../config/jwt.config');
-const UserService = require('../service/user.service');
-const { transporter } = require('../config/email.config');
 const validateMongodbId = require('../utils/validateMongodbId.utils');
-const CartModel = require('../models/cart.model');
+const { transporter } = require('../config/email.config');
 const ProductModel = require('../models/product.model');
+const UserService = require('../service/user.service');
 const CouponModel = require('../models/coupon.model');
 const OrderModel = require('../models/order.model');
+const CartModel = require('../models/cart.model');
 const { role } = require('../models/user.model');
 const refreshTokenMaxSize = 5;
 const oneDay = 1000 * 60 * 60 * 24;

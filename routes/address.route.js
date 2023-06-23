@@ -1,7 +1,7 @@
 const express = require('express');
 const addressRoute = express.Router();
 const AddressController = require("../controller/address.controller");
-const { authMiddleware, authorizeRole } = require('../middleware/auth.middleware');
+const { authMiddleware } = require('../middleware/auth.middleware');
 
 // protected route
 addressRoute.post('/add-address', [authMiddleware], AddressController.createAddress);
