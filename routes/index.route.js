@@ -9,7 +9,7 @@ const brandRoute = require('./brand.route');
 const couponRoute = require('./coupon.route');
 const enquiryRoute = require('./enquiry.route');
 const addressRoute = require('./address.route');
-
+const colorRoute = require('./color.route');
 
 module.exports = (app) => {
 
@@ -32,6 +32,7 @@ module.exports = (app) => {
     app.use('/api/brand', brandRoute);
     app.use('/api/coupon', couponRoute);
     app.use('/api/enquiry', enquiryRoute);
+    app.use('/api/color', colorRoute);
 
 
     // manage if any unknown request is coming or a bad request coming
