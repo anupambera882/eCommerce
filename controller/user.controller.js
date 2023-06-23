@@ -2,6 +2,7 @@ const { generateToken, verifyToken } = require('../config/jwt.config');
 const UserService = require('../service/user.service');
 const { transporter } = require('../config/email.config');
 const validateMongodbId = require('../utils/validateMongodbId.utils');
+const { role } = require('../models/user.model');
 const refreshTokenMaxSize = 5;
 const oneDay = 1000 * 60 * 60 * 24;
 
@@ -511,11 +512,17 @@ class UserController {
 
     static getWishList = async (req, res) => {
         try {
+            const { userId } = req.user;
+            const user = UserService.getUserByPK({ _id: userId }, populate('wishList'));
 
+            return res.status(202).json({
+                success: true,
+                data: user
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -523,23 +530,48 @@ class UserController {
 
     static loginAdmin = async (req, res) => {
         try {
+            const { email, password } = req.body;
+            let admin;
+            if (email && password) {
+                admin = await UserService.getUserByPK({ email: email });;
+            }
+            if (!admin || !(await admin.isPasswordMatch(password)) || (admin.role !== role.ADMIN)) {
+                return res.status(401).json({
+                    success: false,
+                    errorMessage: "Invalid credentials"
+                })
+            }
 
-        } catch (err) {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to login your Account",
-                errMessage: err.message
+            if (admin.refreshToken.length >= refreshTokenMaxSize) {
+                await UserService.updateUserDetailsById(admin.id, { $pull: { refreshToken: admin.refreshToken[0] } });
+            }
+            // Create a refreshToken token and update in db
+            const refreshToken = await generateToken({ UserId: admin._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
+            await UserService.updateUserDetailsById(admin.id, { $push: { refreshToken: refreshToken } });
+            // Create a access token 
+            const accessToken = await generateToken(
+                { userId: admin.id, email: admin.email, mobile: admin.mobile, role: admin.role },
+                process.env.ACCESS_TOKEN_SECRET_KEY, process.env.ACCESS_TOKEN_EXPIRATION_TIME);
+            res.cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                expires: new Date(Date.now() + 365 * oneDay),
+                path: '/',
             });
-        }
-    }
-
-    static saveAddress = async (req, res) => {
-        try {
-
+            return res.status(202).json({
+                success: true,
+                message: "User login successfully",
+                accessToken: accessToken,
+                data: {
+                    id: admin._id,
+                    email: admin.email,
+                    mobile: admin.mobile
+                }
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to Login",
                 errMessage: err.message
             });
         }

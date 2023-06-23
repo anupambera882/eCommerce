@@ -230,7 +230,9 @@ class ProductController {
             });
         } catch (err) {
             return res.status(500).json({
-
+                success: false,
+                message: "Unable to modify product",
+                errMessage: err.message
             });
         }
     }
@@ -254,7 +256,7 @@ class ProductController {
                 })
             }
 
-            const rateProduct = await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star,comment:comment, postedBy: userId } } });
+            await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star, comment: comment, postedBy: userId } } });
             const getAllRating = await ProductService.getProductByPK({ _id: productId });
 
             let totalRating = getAllRating.rating.length;
@@ -271,21 +273,34 @@ class ProductController {
 
         } catch (err) {
             return res.status(500).json({
-
+                success: false,
+                message: "Unable to modify product",
+                errMessage: err.message
             });
         }
     }
 
     static uploadImages = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
             let { thumbnail, images } = req.files;
             thumbnail = thumbnail[0].path;
+            let imagePath;
             images.forEach((image) => {
-                image.push(image.path);
+                imagePath.push(image.path);
+            });
+            const product = await ProductService.updateProductDetailsById(id, { thumbnail: thumbnail, images: imagePath });
+            return res.status(201).json({
+                success: true,
+                message: 'images upload successfully',
+                product: product
             });
         } catch (err) {
             return res.status(500).json({
-
+                success: false,
+                message: "Unable to modify product",
+                errMessage: err.message
             });
         }
     }
@@ -297,7 +312,9 @@ class ProductController {
             });
         } catch (err) {
             return res.status(500).json({
-
+                success: false,
+                message: "Unable to modify product",
+                errMessage: err.message
             });
         }
     }

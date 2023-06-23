@@ -7,9 +7,9 @@ class UserService {
         return newUserSave;
     }
 
-    static getUserByPK = async (pk, select = 0) => {
-        if (select) {
-            const userData = await UserModel.findOne(pk, select);
+    static getUserByPK = async (pk,populated = 0) => {
+        if (populated) {
+            const userData = await UserModel.findOne(pk).populated;
             return userData;
         }
         const userData = await UserModel.findOne(pk);

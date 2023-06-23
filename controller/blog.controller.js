@@ -1,4 +1,3 @@
-const { UserModel } = require("../models/user.model");
 const BlogService = require("../service/blog.service");
 const validateMongodbId = require("../utils/validateMongodbId.utils");
 
@@ -183,6 +182,31 @@ class BlogController {
             return res.status(500).json({
                 success: false,
                 message: "Unable to update",
+                errMessage: err.message
+            });
+        }
+    }
+
+    static uploadImages = async (req, res) => {
+        try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
+            let { images } = req.files;
+            thumbnail = thumbnail[0].path;
+            let imagePath;
+            images.forEach((image) => {
+                imagePath.push(image.path);
+            });
+            const product = await ProductService.updateProductDetailsById(id, { images: imagePath });
+            return res.status(201).json({
+                success: true,
+                message: 'images upload successfully',
+                product: product
+            });
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                message: "Unable to modify product",
                 errMessage: err.message
             });
         }

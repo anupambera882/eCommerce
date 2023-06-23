@@ -40,10 +40,10 @@ const blogSchema = new mongoose.Schema({
         ref: modelName.USER,
         required: true
     }],
-    Image: {
+    Images: [{
         type: String,
         required: true,
-    },
+    }],
     author: {
         type: String,
         default: role.ADMIN
