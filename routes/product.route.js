@@ -18,6 +18,6 @@ productRoute.post('/update-product/:productId', [authMiddleware, authorizeRole([
 productRoute.post('/delete-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.deleteProductById);
 productRoute.post('/wishList', [authMiddleware], ProductController.addToWishList);
 productRoute.post('/rating', [authMiddleware], ProductController.rating);
-// , upload.fields(fields), multerErrorHandlerMiddleware, productImgResize
+// productRoute.post('/', [upload.fields(fields), multerErrorHandlerMiddleware, productImgResize], ProductController.uploadImages);
 
 module.exports = productRoute;

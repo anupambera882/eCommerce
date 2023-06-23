@@ -238,16 +238,37 @@ class ProductController {
     static rating = async (req, res) => {
         try {
             const { userId } = req.user;
-            const { star, productId } = req.body;
+            const { star, productId, comment } = req.body;
             const product = await ProductService.getProductByPK({ _id: productId });
 
             let alreadyRated = product.rating.find((userId) => {
                 userId.postedBy.toString() === userId.toString()
             });
 
-            // if (alreadyRated) {
-            //     const updateRating = await ProductService.updateProductDetailsById(productId,)
-            // }
+            if (alreadyRated) {
+                const updateRating = await ProductService.updateProductDetailsById(productId, { $set: { 'rating.$.star': star, 'rating.$.comment': comment } })
+
+                return res.json({
+                    success: true,
+                    updateRating: updateRating
+                })
+            }
+
+            const rateProduct = await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star,comment:comment, postedBy: userId } } });
+            const getAllRating = await ProductService.getProductByPK({ _id: productId });
+
+            let totalRating = getAllRating.rating.length;
+            let ratingSum = getAllRating.rating
+                .map((item) => item.star)
+                .reduce((prev, curr) => prev + curr, 0);
+            let actualRating = Math.round(ratingSum / totalRating);
+            let finalProduct = ProductService.updateProductDetailsById(productId, { $set: { totalRating: actualRating } });
+
+            return res.status(200).json({
+                success: true,
+                finalProduct: finalProduct
+            });
+
         } catch (err) {
             return res.status(500).json({
 

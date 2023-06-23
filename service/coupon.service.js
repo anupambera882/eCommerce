@@ -7,21 +7,8 @@ class CouponService {
         return newCouponSave;
     }
 
-    static getCouponByPK = async (pk, select = 0) => {
-        if (select) {
-            const couponData = await CouponModel.findOne(pk, select);
-            return couponData;
-        }
-        const couponData = await CouponModel.findOne(pk);
-        return couponData;
-    }
-
-    static getAllCoupon = async (filter, skip, limit, select = 0) => {
-        if (filter) {
-            const couponsData = await CouponModel.find(filter, select).skip(skip).limit(limit);
-            return couponsData;
-        }
-        const couponsData = await CouponModel.find().skip(skip).limit(limit);
+    static getAllCoupon = async () => {
+        const couponsData = await CouponModel.find();
         return couponsData;
     }
 

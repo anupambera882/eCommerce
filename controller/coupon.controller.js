@@ -1,13 +1,25 @@
 const CouponService = require("../service/coupon.service");
+const validateMongodbId = require("../utils/validateMongodbId.utils");
+
 
 class CouponController {
     static createCoupon = async (req, res) => {
         try {
+            const { name, expiry, discount } = req.body;
+            const newCoupon = await CouponService.createNewCoupon({
+                name: name,
+                expiry: expiry,
+                discount: discount
+            });
 
+            return res.status(201).json({
+                success: true,
+                coupon: newCoupon
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to create new coupon",
                 errMessage: err.message
             });
         }
@@ -15,11 +27,16 @@ class CouponController {
 
     static getAllCoupon = async (req, res) => {
         try {
+            const allCoupon = await CouponService.getAllCoupon();
 
+            return res.status(201).json({
+                success: true,
+                coupon: allCoupon
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to create get data",
                 errMessage: err.message
             });
         }
@@ -27,11 +44,18 @@ class CouponController {
 
     static updateCoupon = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
 
+            const coupon = await CouponService.updateCouponDetailsById(id, req.body);
+            return res.status(201).json({
+                success: true,
+                coupon: coupon
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to update coupon",
                 errMessage: err.message
             });
         }
@@ -39,11 +63,18 @@ class CouponController {
 
     static deleteCoupon = async (req, res) => {
         try {
+            const { id } = req.params;
+            validateMongodbId(id, res);
 
+            await CouponService.updateCouponDetailsById(id, { isDeleted: true });
+            return res.status(201).json({
+                success: true,
+                message: 'successfully delete coupon'
+            })
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "unable to delete coupon",
                 errMessage: err.message
             });
         }
