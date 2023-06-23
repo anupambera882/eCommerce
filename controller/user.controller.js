@@ -1,7 +1,12 @@
+const uniqid = require('uniqid');
 const { generateToken, verifyToken } = require('../config/jwt.config');
 const UserService = require('../service/user.service');
 const { transporter } = require('../config/email.config');
 const validateMongodbId = require('../utils/validateMongodbId.utils');
+const CartModel = require('../models/cart.model');
+const ProductModel = require('../models/product.model');
+const CouponModel = require('../models/coupon.model');
+const OrderModel = require('../models/order.model');
 const { role } = require('../models/user.model');
 const refreshTokenMaxSize = 5;
 const oneDay = 1000 * 60 * 60 * 24;
@@ -579,11 +584,44 @@ class UserController {
 
     static userCart = async (req, res) => {
         try {
+            const { cart } = req.body;
+            const { userId } = req.user;
 
+            let products = [];
+            const user = await UserService.getUserByPK({ _id: userId });
+
+            const alreadyExistCart = await CartModel.findOne({ orderBy: user._id });
+
+            if (alreadyExistCart) {
+                alreadyExistCart.remove();
+            }
+
+            for (let i = 0; i < cart.length; i++) {
+                const object = {};
+                object.product = cart[i]._id;
+                object.count = cart[i].count;
+                object.color = cart[i].color;
+                let getPrice = await ProductModel.findById(cart[i]._id).select('price').exec();
+                object.price = getPrice.price;
+                products.push(object);
+            }
+
+            let cartTotal = 0;
+            for (let i = 0; i < products.length; i++) {
+                cartTotal = cartTotal + products[i].price * products[i].count;
+            }
+
+            let newCart = await new CartModel({
+                products,
+                cartTotal,
+                orderBy: user._id,
+            }).save();
+
+            res.json(newCart);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -591,11 +629,13 @@ class UserController {
 
     static getUserCart = async (req, res) => {
         try {
-
+            const { userId } = req.user;
+            const cart = await CartModel.findOne({ orderBy: userId }).populate('products.product');
+            res.json(cart);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -603,11 +643,14 @@ class UserController {
 
     static emptyCart = async (req, res) => {
         try {
-
+            const { userId } = req.user;
+            const user = UserService.getUserByPK({ _id: userId })
+            const cart = await CartModel.findOneAndRemove({ orderBy: userId });
+            res.json(cart);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -615,11 +658,28 @@ class UserController {
 
     static applyCoupon = async (req, res) => {
         try {
-
+            const { coupon } = req.body;
+            const { userId } = req.user;
+            const validCoupon = await CouponModel.findOne({ name: coupon });
+            if (validCoupon === null) {
+                return res.json({
+                    success: false,
+                    message: 'invalid coupon'
+                });
+            }
+            const user = await UserService.getUserByPK({ _id: userId });
+            let { cartTotal } = await CartModel.findOne({ orderBy: userId }).populate('products.product');
+            let totalAfterDiscount = (cartTotal - (cartTotal * validCoupon.discount) / 100).toFixed(2);
+            await CartModel.findOneAndUpdate(
+                { orderBy: userId },
+                { totalAfterDiscount },
+                { new: true }
+            );
+            res.json(totalAfterDiscount);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -627,11 +687,50 @@ class UserController {
 
     static createOrder = async (req, res) => {
         try {
+            const { COD, couponApplied } = req.body;
+            const { userId } = req.user;
+            if (!COD) {
+                return res.json({
+                    success: false,
+                    message: 'created cash order failed'
+                });
+            }
+            const user = await UserService.getUserByPK({ _id: userId });
+            let userCart = await CartModel.findOne({ orderBy: userId });
+            let finalAmount = 0;
+            if (couponApplied && userCart.totalAfterDiscount) {
+                finalAmount = userCart.totalAfterDiscount;
+            } else {
+                finalAmount = userCart.cartTotal;
+            }
 
+            let newOrder = await new OrderModel.$where({
+                products: userCart.products,
+                paymentIntent: {
+                    id: uniqid(),
+                    method: 'COD',
+                    status: 'Cash On Delivery',
+                    created: Date.now(),
+                    currency: 'USD'
+                },
+                orderBy: userId,
+                orderStatus: 'Cash On Delivery'
+            }).save();
+
+            let update = userCart.products.map((item) => {
+                return {
+                    updateOne: {
+                        filter: { _id: item.product._id },
+                        update: { $inc: { quantity: -item.count, sold: +item.count } }
+                    }
+                }
+            });
+            const updated = await ProductModel.bulkWrite(update, {});
+            res.json({ message: success });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -639,11 +738,13 @@ class UserController {
 
     static getOrder = async (req, res) => {
         try {
-
+            const { userId } = req.user;
+            const userOrders = await OrderModel.findOne({ orderBy: userId }).populate('products.product').exec();
+            res.json(userOrders);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
@@ -651,11 +752,22 @@ class UserController {
 
     static updateOrderStatus = async (req, res) => {
         try {
+            const { status } = req.body;
+            const { id } = req.params;
+            const updateOrderStatus = await OrderModel.findByIdAndUpdate(id, {
+                orderStatus: status,
+                paymentIntent: {
+                    status: status
+                }
+            }, {
+                new: true
+            });
 
+            res.json(updateOrderStatus);
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to reactive your Account",
+                message: "Unable to unable to fetch data",
                 errMessage: err.message
             });
         }
