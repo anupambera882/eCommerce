@@ -39,7 +39,9 @@ class UserController {
             const newUserSave = await UserService.createNewUser(newUser);
             const refreshToken = await generateToken({ id: newUserSave._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
             await UserService.updateUserDetailsById(newUserSave._id, { $push: { refreshToken: refreshToken } });
-            await transporter.sendMail({
+
+            // Not necessary to await for this mail send 
+            transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: newUserSave.email,
                 subject: "welcome to mycommerce",
@@ -89,12 +91,10 @@ class UserController {
                 await UserService.updateUserDetailsById(userData.id, { $pull: { refreshToken: userData.refreshToken[0] } });
             }
             // Create a refreshToken token and update in db
-            const refreshToken = await generateToken({ UserId: userData._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
+            const refreshToken = await generateToken({ id: userData._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
             await UserService.updateUserDetailsById(userData.id, { $push: { refreshToken: refreshToken } });
             // Create a access token 
-            const accessToken = await generateToken(
-                { userId: userData.id, email: userData.email, mobile: userData.mobile, role: userData.role },
-                process.env.ACCESS_TOKEN_SECRET_KEY, process.env.ACCESS_TOKEN_EXPIRATION_TIME);
+            const accessToken = await generateToken({ userId: userData.id, email: userData.email, mobile: userData.mobile, role: userData.role, isBlocked: userData.isBlocked }, process.env.ACCESS_TOKEN_SECRET_KEY, process.env.ACCESS_TOKEN_EXPIRATION_TIME);
             res.cookie('refreshToken', refreshToken, {
                 httpOnly: true,
                 secure: true,
@@ -184,7 +184,7 @@ class UserController {
                 return res.sendStatus(204);
             }
 
-            await UserService.updateUserDetailsById(userData.id, { $pull: { refreshToken: refreshToken } });
+            await UserService.updateUserDetailsById(userData._id, { $pull: { refreshToken: refreshToken } });
             res.clearCookie("refreshToken", {
                 httpOnly: true,
                 secure: true,
@@ -308,7 +308,7 @@ class UserController {
             const newSecret = userData._id + process.env.ACCESS_TOKEN_SECRET_KEY;
             const token = await generateToken({ userId: userData._id }, newSecret, '15m');
             const link = `http://127.0.0.1:${process.env.PORT}/api/user/reset-password/${userData._id}/${token}`;
-            // console.log(link);
+            console.log(link);
             // Send Email
             await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
@@ -373,7 +373,7 @@ class UserController {
             await UserService.updateUserDetailsById(userId, { $set: { isDeleted: true } });
             const token = await generateToken({ userId: userData._id }, process.env.ACCESS_TOKEN_SECRET_KEY, '3d');
             const link = `http://127.0.0.1:${process.env.PORT}/api/user/reactive-Deleted-account/${token}`;
-            // console.log(link);
+            console.log(link);
             await transporter.sendMail({
                 from: process.env.EMAIL_FROM,
                 to: userData.email,
@@ -381,6 +381,7 @@ class UserController {
                 html: `<a href=${link}>Click Here</a> to Reactive Your Account Within 72 hours`
             });
 
+            await UserService.updateUserDetailsById(userData._id, { $set: { refreshToken: [] } });
             res.status(200).json({
                 success: true,
                 message: "Successfully deleted Account",
@@ -410,7 +411,7 @@ class UserController {
                 userData = await UserService.getUserByPK({ _id: userId, isDeleted: true });
             }
 
-            if (!userData || !(await userData.isPasswordMatch(password)) || userData.email !== email || userData.isDeleted !== true) {
+            if (!userData || !(await userData.isPasswordMatch(password)) || userData.email !== email || userData.isDeleted === true) {
                 return res.status(400).json({
                     success: false,
                     message: "Invalid credentials",
@@ -436,6 +437,7 @@ class UserController {
             });
         }
     }
+
     static blockAUser = async (req, res) => {
         try {
             const { id } = req.params;
