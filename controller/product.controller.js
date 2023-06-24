@@ -1,7 +1,10 @@
-const ProductService = require("../service/product.service");
-const UserService = require("../service/user.service");
-const { deleteFile } = require("../utils/deleteFile.util");
+const ProductCategoryService = require("../service/productCategory.service");
 const validateMongodbId = require("../utils/validateMongodbId.utils");
+const ProductService = require("../service/product.service");
+const { deleteFile } = require("../utils/deleteFile.util");
+const BrandService = require("../service/brand.service");
+const ColorService = require("../service/color.service");
+const UserService = require("../service/user.service");
 
 
 class ProductController {
@@ -9,6 +12,7 @@ class ProductController {
     static createNewProduct = async (req, res) => {
         try {
             const { title, description, price, quantity } = req.body;
+            let { category, brand, color } = req.body;
             let { thumbnail, images } = req.files;
             thumbnail = `${thumbnail[0].destination}\\products\\${thumbnail[0].filename.replace(/\.[^/.]+$/, '.jpeg')}`;
             let imagePath = [];
@@ -38,15 +42,20 @@ class ProductController {
                 }
             }
 
+            category = await ProductCategoryService.getProductCategoryByPK({ title: category });
+            brand = await BrandService.getBrandByPK({ title: brand });
+            color = await ColorService.getColorByPK({ title: color });
+
+
             const newProduct = {
                 title: title,
                 slug: req.body.slug,
                 description: description,
                 price: price,
-                // category: category,
-                // brand: brand,
+                category: category._id,
+                brand: brand._id,
                 quantity: quantity,
-                // color: color,
+                color: color._id,
                 sellerId: req.user.userId,
                 thumbnail: thumbnail,
                 images: imagePath

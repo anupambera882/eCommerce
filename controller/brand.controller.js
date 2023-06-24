@@ -5,7 +5,7 @@ class BrandController {
     static createBrand = async (req, res) => {
         try {
             const { title } = req.body;
-            const newBrand = BrandService.createNewBrand({ title: title });
+            const newBrand = await BrandService.createNewBrand({ title: title });
 
             return res.status(201).json({
                 success: true,

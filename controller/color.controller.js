@@ -4,7 +4,7 @@ class ColorController {
     static createColor = async (req, res) => {
         try {
             const { title } = req.body;
-            const newColor = ColorService.createNewColor({ title: title });
+            const newColor = await ColorService.createNewColor({ title: title });
 
             return res.status(201).json({
                 success: true,

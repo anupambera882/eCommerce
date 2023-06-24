@@ -4,7 +4,7 @@ class EnquiryController {
     static createEnquiry = async (req, res) => {
         try {
             const { name } = req.body;
-            const newEnquiry = EnquiryService.createNewEnquiry({ name: name });
+            const newEnquiry = await EnquiryService.createNewEnquiry({ name: name });
 
             return res.status(201).json({
                 success: true,

@@ -25,13 +25,13 @@ const productSchema = new mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: modelName.PRODUCT_CATEGORY
-        // required: true
+        ref: modelName.PRODUCT_CATEGORY,
+        required: true
     },
     brand: {
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.BRAND,
-        // required: true,
+        required: true,
     },
     quantity: {
         type: Number,
@@ -39,12 +39,13 @@ const productSchema = new mongoose.Schema({
     },
     sold: {
         type: Number,
-        default: 0
+        default: 0,
+        required: true
     },
     color: {
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.COLOR,
-        // required: true,
+        required: true,
     },
     sellerId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -70,12 +71,12 @@ const productSchema = new mongoose.Schema({
     },
     thumbnail: {
         type: String,
-        // required: true
+        required: true
     },
     images: {
         type: Array,
         default: [],
-        // required: true
+        required: true
     },
     isDeleted: {
         type: Boolean,

@@ -5,7 +5,7 @@ class ProductCategoryController {
     static createProductCategory = async (req, res) => {
         try {
             const { title } = req.body;
-            const newProductCategory = ProductCategoryService.createNewProductCategory({ title: title });
+            const newProductCategory = await ProductCategoryService.createNewProductCategory({ title: title });
 
             return res.status(201).json({
                 success: true,

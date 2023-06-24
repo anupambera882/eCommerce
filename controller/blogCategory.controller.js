@@ -5,7 +5,7 @@ class BlogCategoryController {
     static createBlogCategory = async (req, res) => {
         try {
             const { title } = req.body;
-            const newBlogCategory = BlogCategoryService.createNewBlogCategory({ title: title });
+            const newBlogCategory = await BlogCategoryService.createNewBlogCategory({ title: title });
             return res.status(201).json({
                 success: true,
                 message: 'New blog category created successfully',
