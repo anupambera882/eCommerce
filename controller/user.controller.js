@@ -222,7 +222,7 @@ class UserController {
                 return res.sendStatus(204);
             }
 
-            await UserService.updateUserDetailsById(userData.id, { $set: { refreshToken: [] } });
+            await UserService.updateUserDetailsById(userData._id, { $set: { refreshToken: [] } });
             res.clearCookie("refreshToken", {
                 httpOnly: true,
                 secure: true,
@@ -332,7 +332,13 @@ class UserController {
     static userPasswordReset = async (req, res) => {
         const { password } = req.body;
         const { id, token } = req.params;
-        validateMongodbId(id, res);
+        const valid = validateMongodbId(id);
+        if (!valid) {
+            return res.status(400).json({
+                "success": false,
+                "message": "This id is not valid or not found"
+            })
+        }
         const user = await UserService.getUserByPK({ _id: id });
         const newSecret = user._id + process.env.ACCESS_TOKEN_SECRET_KEY;
         try {
@@ -441,10 +447,14 @@ class UserController {
     static blockAUser = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
-            await UserService.updateUserDetailsById(id, {
-                $set: { isBlocked: true }
-            });
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
+            await UserService.updateUserDetailsById(id, { $set: { isBlocked: true } });
 
             return res.status(200).json({
                 success: true,
@@ -462,7 +472,13 @@ class UserController {
     static unblockAUser = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await UserService.updateUserDetailsById(id, {
                 $set: { isBlocked: false }
             });
@@ -480,10 +496,16 @@ class UserController {
         }
     }
 
-    static getAUser = async (req, res) => {
+    static getAUser = async (req, res, next) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const user = await UserService.getUserByPK({ _id: id });
             if (!user) {
                 return res.sendStatus(204);
@@ -553,7 +575,7 @@ class UserController {
                 await UserService.updateUserDetailsById(admin.id, { $pull: { refreshToken: admin.refreshToken[0] } });
             }
             // Create a refreshToken token and update in db
-            const refreshToken = await generateToken({ UserId: admin._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
+            const refreshToken = await generateToken({ id: admin._id }, process.env.REFRESH_TOKEN_SECRET_KEY, process.env.REFRESH_TOKEN_EXPIRATION_TIME);
             await UserService.updateUserDetailsById(admin.id, { $push: { refreshToken: refreshToken } });
             // Create a access token 
             const accessToken = await generateToken(
@@ -567,7 +589,7 @@ class UserController {
             });
             return res.status(202).json({
                 success: true,
-                message: "User login successfully",
+                message: "admin login successfully",
                 accessToken: accessToken,
                 data: {
                     id: admin._id,
