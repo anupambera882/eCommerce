@@ -13,11 +13,10 @@ productRoute.get('/get-product/:productId', ProductController.getProductById);
 
 
 // Protected Routes
-productRoute.post('/add-product', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.createNewProduct);
+productRoute.post('/add-product', [authMiddleware, authorizeRole([role.ADMIN]), upload.fields(fields), multerErrorHandlerMiddleware, productImgResize], ProductController.createNewProduct);
 productRoute.post('/update-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.updateProductById);
 productRoute.post('/delete-product/:productId', [authMiddleware, authorizeRole([role.ADMIN])], ProductController.deleteProductById);
 productRoute.post('/wishList', [authMiddleware], ProductController.addToWishList);
 productRoute.post('/rating', [authMiddleware], ProductController.rating);
-productRoute.post('/uploadImages/:id', [upload.fields(fields), multerErrorHandlerMiddleware, productImgResize], ProductController.uploadImages);
 
 module.exports = productRoute;

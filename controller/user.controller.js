@@ -454,6 +454,13 @@ class UserController {
                     "message": "This id is not valid or not found"
                 })
             }
+            const user = await UserService.getUserByPK({ _id: id });
+            if (user.isBlocked === true) {
+                return res.json({
+                    success: false,
+                    message: 'User already blocked'
+                });
+            }
             await UserService.updateUserDetailsById(id, { $set: { isBlocked: true } });
 
             return res.status(200).json({
@@ -479,9 +486,15 @@ class UserController {
                     "message": "This id is not valid or not found"
                 })
             }
-            await UserService.updateUserDetailsById(id, {
-                $set: { isBlocked: false }
-            });
+
+            const user = await UserService.getUserByPK({ _id: id });
+            if (user.isBlocked === false) {
+                return res.json({
+                    success: false,
+                    message: 'User already unblock'
+                });
+            }
+            await UserService.updateUserDetailsById(id, { $set: { isBlocked: false } });
 
             return res.status(200).json({
                 success: true,

@@ -30,13 +30,19 @@ const upload = multer({
 
 const productImgResize = async (req, res, next) => {
     if (!req.files) return next();
-    await Promise.all(req.files.map(async (file) => {
+    await sharp(req.files.thumbnail[0].path)
+        // .resize(300, 300)
+        .toFormat('jpeg')
+        .jpeg({ quality: 90 })
+        .toFile(`public/images/products/${req.files.thumbnail[0].filename.replace(/\.[^/.]+$/, '.jpeg')}`)
+    fs.unlinkSync(`public/images/${req.files.thumbnail[0].filename}`);
+    await Promise.all(req.files.images.map(async (file) => {
         await sharp(file.path)
-            .resize(300, 300)
+            // .resize(300, 300)
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
-            .toFile(`public/images/products/${file.filename}`)
-            // .fs.unlinkSync(`public/images/products/${file.filename}`);
+            .toFile(`public/images/products/${file.filename.replace(/\.[^/.]+$/, '.jpeg')}`)
+        fs.unlinkSync(`public/images/${file.filename}`);
     }));
     next();
 }
@@ -49,7 +55,7 @@ const blogImgResize = async (req, res, next) => {
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
             .toFile(`public/images/blogs/${file.filename}`)
-            // .fs.unlinkSync(`public/images/blogs/${file.filename}`);
+        // .fs.unlinkSync(`public/images/blogs/${file.filename}`);
     }));
     next();
 }

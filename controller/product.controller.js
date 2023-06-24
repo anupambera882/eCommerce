@@ -9,6 +9,12 @@ class ProductController {
     static createNewProduct = async (req, res) => {
         try {
             const { title, description, price, quantity } = req.body;
+            let { thumbnail, images } = req.files;
+            thumbnail = `${thumbnail[0].destination}\\products\\${thumbnail[0].filename.replace(/\.[^/.]+$/, '.jpeg')}`;
+            let imagePath = [];
+            images.forEach((image) => {
+                imagePath.push(`${image.destination}\\products\\${image.filename.replace(/\.[^/.]+$/, '.jpeg')}`);
+            });
 
             let { slug } = req.body;
             // Check duplicate slag 
@@ -37,13 +43,13 @@ class ProductController {
                 slug: req.body.slug,
                 description: description,
                 price: price,
-                category: category,
-                brand: brand,
+                // category: category,
+                // brand: brand,
                 quantity: quantity,
-                color: color,
+                // color: color,
                 sellerId: req.user.userId,
-                // thumbnail: thumbnail,
-                // images: images
+                thumbnail: thumbnail,
+                images: imagePath
             }
             const newProductSave = await ProductService.createNewProduct(newProduct);
 
@@ -284,12 +290,7 @@ class ProductController {
         try {
             const { id } = req.params;
             validateMongodbId(id, res);
-            let { thumbnail, images } = req.files;
-            thumbnail = thumbnail[0].path;
-            let imagePath;
-            images.forEach((image) => {
-                imagePath.push(image.path);
-            });
+
             const product = await ProductService.updateProductDetailsById(id, { thumbnail: thumbnail, images: imagePath });
             return res.status(201).json({
                 success: true,
