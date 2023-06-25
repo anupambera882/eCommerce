@@ -1,10 +1,10 @@
 const ProductCategoryService = require("../service/productCategory.service");
 const validateMongodbId = require("../utils/validateMongodbId.utils");
 const ProductService = require("../service/product.service");
-const { deleteFile } = require("../utils/deleteFile.util");
 const BrandService = require("../service/brand.service");
 const ColorService = require("../service/color.service");
 const UserService = require("../service/user.service");
+// const { deleteFile } = require("../utils/deleteFile.util");
 
 
 class ProductController {
@@ -118,14 +118,20 @@ class ProductController {
                 });
             }
 
-            const product = await ProductService.updateProductDetailsById(productId, req.body);
-
-            if (!product) {
-                return res.status(404).json({
-                    success: false,
-                    message: 'Product not found'
-                });
+            if (req.body.category) {
+                const category = await ProductCategoryService.getProductCategoryByPK({ title: category });
+                req.body.category = category._id;
             }
+            if (req.body.brand) {
+                const brand = await BrandService.getBrandByPK({ title: brand });
+                req.body.brand = brand._id;
+            }
+            if (req.body.color) {
+                const color = await ColorService.getColorByPK({ title: color });
+                req.body.color = color._id;
+            }
+
+            const product = await ProductService.updateProductDetailsById(productId, req.body);
 
             return res.status(201).json({
                 success: true,
@@ -142,8 +148,8 @@ class ProductController {
 
     static getAllProducts = async (req, res) => {
         try {
-            const page = query.params.page || 1;
-            const limit = query.query.limit || 10;
+            const page = req.query.page || 1;
+            const limit = req.query.limit || 10;
             const { category, brand, color, rating, discountPercentage, title } = req.query;
 
             const filter = {};
