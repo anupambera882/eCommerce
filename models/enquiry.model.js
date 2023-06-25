@@ -19,10 +19,10 @@ const enquirySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    status:{
-        type :String,
+    status: {
+        type: String,
         default: 'Submitted',
-        enum:['Submitted','contacted','In progress']
+        enum: ['Submitted', 'contacted', 'In progress']
     },
     isDeleted: {
         type: Boolean,

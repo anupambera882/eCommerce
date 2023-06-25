@@ -5,9 +5,10 @@ const { authMiddleware, authorizeRole } = require('../middleware/auth.middleware
 const { role } = require('../models/user.model');
 
 // protected route
-couponRoute.post('/create-coupon', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.createCoupon)
+couponRoute.post('/add-coupon', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.createCoupon)
 couponRoute.post('/update-coupon/:id', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.updateCoupon)
-couponRoute.get('/get-all-coupon', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.getAllCoupon)
-couponRoute.post('/delete-coupon', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.deleteCoupon)
+couponRoute.get('/get-all-coupon', [authMiddleware], CouponController.getAllCoupon)
+couponRoute.get('/get-coupon/:id', [authMiddleware], CouponController.getCouponById)
+couponRoute.post('/delete-coupon/:id', [authMiddleware, authorizeRole([role.ADMIN])], CouponController.deleteCoupon)
 
 module.exports = couponRoute;

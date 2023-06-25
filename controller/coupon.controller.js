@@ -49,6 +49,31 @@ class CouponController {
         }
     }
 
+    static getCouponById = async (req, res) => {
+        try {
+            const { id } = req.params;
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
+
+            const coupon = await CouponService.getCouponByPk({ _id: id });
+            return res.status(200).json({
+                success: true,
+                coupon: coupon
+            })
+        } catch (err) {
+            return res.status(500).json({
+                success: false,
+                message: "unable to get coupon",
+                errMessage: err.message
+            });
+        }
+    }
+
     static updateCoupon = async (req, res) => {
         try {
             const { id } = req.params;
@@ -63,7 +88,7 @@ class CouponController {
             const coupon = await CouponService.updateCouponDetailsById(id, req.body);
             return res.status(201).json({
                 success: true,
-                coupon: coupon
+                message: 'successfully update coupon'
             })
         } catch (err) {
             return res.status(500).json({
