@@ -9,19 +9,19 @@ class ProductService {
 
     static getProductByPK = async (pk, select = 0) => {
         if (select) {
-            const productData = await ProductModel.findOne(pk, select).populate('category', 'title').populate('brand', 'title').populate('color', 'title').exec();
+            const productData = await ProductModel.findOne(pk, select).populate({ path: 'category', select: '-_id title' }).populate({ path: 'brand', select: '-_id title' }).populate({ path: 'color', select: '-_id title' }).exec();
             return productData;
         }
-        const productData = await ProductModel.findOne(pk).populate('category', 'title').populate('brand', 'title').populate('color', 'title').exec();
+        const productData = await ProductModel.findOne(pk).populate({ path: 'category', select: '-_id title' }).populate({ path: 'brand', select: '-_id title' }).populate({ path: 'color', select: '-_id title' }).exec();
         return productData;
     }
 
     static getAllProduct = async (filter = 0, skip = 0, limit = 0, select = 0) => {
         if (select) {
-            const productsData = await ProductModel.find(filter, select).populate('category', 'title').populate('brand', 'title').populate('color', 'title').skip(skip).limit(limit).exec();
+            const productsData = await ProductModel.find(filter, select).populate({ path: 'category', select: '-_id title' }).populate({ path: 'brand', select: '-_id title' }).populate({ path: 'color', select: '-_id title' }).skip(skip).limit(limit).exec();
             return productsData;
         }
-        const productsData = await ProductModel.find().populate('category', 'title').populate('brand', 'title').populate('color', 'title').exec();
+        const productsData = await ProductModel.find().populate({ path: 'category', select: '-_id title' }).populate({ path: 'brand', select: '-_id title' }).populate({ path: 'color', select: '-_id title' }).exec();
         return productsData;
     }
 

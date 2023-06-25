@@ -161,7 +161,7 @@ class ProductController {
             if (color) { filter.color = color; }
             if (rating) { filter.rating = rating; }
             if (discountPercentage) { filter.discountPercentage = discountPercentage; }
-            const products = await ProductService.getAllProduct(filter, skip, limit, { _id: 1, title: 1, slug: 1, description: 1, price: 1, category: 1, brand: 1, color: 1, discountPercentage: 1, thumbnail: 1 });
+            const products = await ProductService.getAllProduct(filter, skip, limit, { _id: 1, title: 1, slug: 1, description: 1, price: 1, category: 1, brand: 1, color: 1, discountPercentage: 1, thumbnail: 1, images: 1 });
 
             return res.status(200).json({
                 success: true,
@@ -224,7 +224,7 @@ class ProductController {
                     message: 'You are not the owner in this product'
                 });
             }
-            const product = await ProductService.updateProductDetailsById(productId, { isDelete: true });
+            const product = await ProductService.updateProductDetailsById(productId, { isDeleted: true });
             if (!product) {
                 return res.status(404).json({
                     success: false,
