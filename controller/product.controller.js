@@ -111,7 +111,7 @@ class ProductController {
 
             const productSellerId = await ProductService.getProductByPK({ _id: productId }, { sellerId: 1 });
 
-            if (req.user.userId !== productSellerId.sellerId) {
+            if (req.user.userId.toString() !== productSellerId.sellerId.toString()) {
                 return res.status(400).json({
                     success: false,
                     message: 'You are not the owner in this product'
@@ -212,7 +212,7 @@ class ProductController {
                 })
             }
             const productSellerId = await ProductService.getProductByPK({ _id: productId }, { sellerId: 1 });
-            if (req.user.userId !== productSellerId.sellerId) {
+            if (req.user.userId.toString() !== productSellerId.sellerId.toString()) {
                 return res.status(400).json({
                     success: false,
                     message: 'You are not the owner in this product'
@@ -318,46 +318,6 @@ class ProductController {
                 finalProduct: finalProduct
             });
 
-        } catch (err) {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to modify product",
-                errMessage: err.message
-            });
-        }
-    }
-
-    static uploadImages = async (req, res) => {
-        try {
-            const { id } = req.params;
-            const valid = validateMongodbId(id);
-            if (!valid) {
-                return res.status(400).json({
-                    "success": false,
-                    "message": "This id is not valid or not found"
-                })
-            }
-
-            const product = await ProductService.updateProductDetailsById(id, { thumbnail: thumbnail, images: imagePath });
-            return res.status(201).json({
-                success: true,
-                message: 'images upload successfully',
-                product: product
-            });
-        } catch (err) {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to modify product",
-                errMessage: err.message
-            });
-        }
-    }
-
-    static deleteImages = async (req, res) => {
-        try {
-            product.images.forEach(async (image) => {
-                await deleteFile(image);
-            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
