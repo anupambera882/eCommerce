@@ -22,11 +22,10 @@ class BlogCategoryService {
     }
 
     static updateBlogCategoryDetailsById = async (id, updateData) => {
-        const updateBlogCategoryData = await BlogCategoryModel.findByIdAndUpdate(id, {
-            $set: updateData
-        }, {
-            new: true
-        });
+        const updateBlogCategoryData = await BlogCategoryModel.findByIdAndUpdate(id, { $set: updateData },
+            {
+                new: true
+            });
         return updateBlogCategoryData;
     }
 }

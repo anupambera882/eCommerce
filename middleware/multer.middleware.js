@@ -49,13 +49,13 @@ const productImgResize = async (req, res, next) => {
 
 const blogImgResize = async (req, res, next) => {
     if (!req.files) return next();
-    await Promise.all(req.files.map(async (file) => {
+    await Promise.all(req.files.images.map(async (file) => {
         await sharp(file.path)
-            .resize(300, 300)
+            // .resize(300, 300)
             .toFormat('jpeg')
             .jpeg({ quality: 90 })
-            .toFile(`public/images/blogs/${file.filename}`)
-        fs.unlinkSync(`public/images/blogs/${file.filename}`);
+            .toFile(`public/images/blogs/${file.filename.replace(/\.[^/.]+$/, '.jpeg')}`)
+        fs.unlinkSync(`public/images/${file.filename}`);
     }));
     next();
 }

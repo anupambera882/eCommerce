@@ -108,14 +108,6 @@ class BlogCategoryController {
 
     static getAllBlogCategory = async (req, res) => {
         try {
-            const { id } = req.params;
-            const valid = validateMongodbId(id);
-            if (!valid) {
-                return res.status(400).json({
-                    "success": false,
-                    "message": "This id is not valid or not found"
-                })
-            }
             const allCategory = await BlogCategoryService.getAllBlogCategory();
 
             return res.status(201).json({

@@ -1,14 +1,23 @@
 const BlogService = require("../service/blog.service");
+const BlogCategoryService = require("../service/blogCategory.service");
 const validateMongodbId = require("../utils/validateMongodbId.utils");
 
 class BlogController {
     static createBlog = async (req, res) => {
         try {
             const { title, description, category } = req.body;
+            let { images } = req.files;
+            let imagePath = [];
+            images.forEach((image) => {
+                imagePath.push(`${image.destination}\\blogs\\${image.filename.replace(/\.[^/.]+$/, '.jpeg')}`);
+            });
+
+            const blogCategory = BlogCategoryService.getBlogCategoryByPK({ title: category });
             const newBlog = {
                 title: title,
                 description: description,
-                category: category
+                category: blogCategory._id,
+                Images: imagePath
             }
 
             const newBlogSave = await BlogService.createNewBlog(newBlog);
@@ -16,9 +25,7 @@ class BlogController {
             return res.status(201).json({
                 success: true,
                 successMessage: "New blog save successfully",
-                data: {
-                    newBlogSave
-                }
+                data: newBlogSave
             });
         } catch (err) {
             return res.status(500).json({
@@ -67,7 +74,7 @@ class BlogController {
                 })
             }
             await BlogService.updateBlogDetailsById(blogId, { $inc: { numViews: 1 } });
-            const blog = await BlogService.getBlogByPK({ _id: blogId },1);
+            const blog = await BlogService.getBlogByPK({ _id: blogId }, 1);
 
             return res.status(200).json({
                 success: true,
@@ -76,7 +83,7 @@ class BlogController {
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "",
+                message: "Unable to get blog",
                 errMessage: err.message
             });
         }
@@ -130,8 +137,8 @@ class BlogController {
             const valid = validateMongodbId(blogId);
             if (!valid) {
                 return res.status(400).json({
-                    "success": false,
-                    "message": "This id is not valid or not found"
+                    success: false,
+                    message: "This id is not valid or not found"
                 })
             }
 
@@ -212,37 +219,6 @@ class BlogController {
             return res.status(500).json({
                 success: false,
                 message: "Unable to update",
-                errMessage: err.message
-            });
-        }
-    }
-
-    static uploadImages = async (req, res) => {
-        try {
-            const { id } = req.params;
-            const valid = validateMongodbId(blogId);
-            if (!valid) {
-                return res.status(400).json({
-                    "success": false,
-                    "message": "This id is not valid or not found"
-                })
-            }
-            let { images } = req.files;
-            thumbnail = thumbnail[0].path;
-            let imagePath;
-            images.forEach((image) => {
-                imagePath.push(image.path);
-            });
-            const product = await ProductService.updateProductDetailsById(id, { images: imagePath });
-            return res.status(201).json({
-                success: true,
-                message: 'images upload successfully',
-                product: product
-            });
-        } catch (err) {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to modify product",
                 errMessage: err.message
             });
         }

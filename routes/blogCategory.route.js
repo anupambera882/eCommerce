@@ -9,7 +9,7 @@ blogCategoryRoute.get('/get-Blog-category/:id', BlogCategoryController.getBlogCa
 blogCategoryRoute.get('/get-all-Blog-category', BlogCategoryController.getAllBlogCategory);
 
 // protected route
-blogCategoryRoute.post('/add-new-category', [authMiddleware, authorizeRole([role.ADMIN])], BlogCategoryController.createBlogCategory);
+blogCategoryRoute.post('/add-category', [authMiddleware, authorizeRole([role.ADMIN])], BlogCategoryController.createBlogCategory);
 blogCategoryRoute.post('/update-category/:id', [authMiddleware, authorizeRole([role.ADMIN])], BlogCategoryController.updateBlogCategory);
 blogCategoryRoute.post('/delete-category/:id', [authMiddleware, authorizeRole([role.ADMIN])], BlogCategoryController.deleteBlogCategory);
 

@@ -12,8 +12,8 @@ const blogSchema = new mongoose.Schema({
         required: true
     },
     category: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelName.BLOG_CATEGORY
     },
     numViews: {
         type: Number,
@@ -33,20 +33,20 @@ const blogSchema = new mongoose.Schema({
     likes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.USER,
-        required: true
+        // required: true
     }],
     dislikes: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: modelName.USER,
-        required: true
+        // required: true
     }],
     Images: [{
         type: String,
         required: true,
     }],
     author: {
-        type: String,
-        default: role.ADMIN
+        type: mongoose.Schema.Types.ObjectId,
+        ref: modelName.USER
     },
     isDeleted: {
         type: Boolean,
