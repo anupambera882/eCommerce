@@ -31,5 +31,10 @@ const AddressSchema = new mongoose.Schema({
     }
 });
 
+AddressSchema.pre(/^find/, function (next) {
+    // Exclude soft-deleted products
+    this.find({ isDeleted: { $ne: true } });
+    next();
+});
 
 module.exports = mongoose.model(modelName.ADDRESS, AddressSchema);

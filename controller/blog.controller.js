@@ -146,17 +146,17 @@ class BlogController {
             // find the login user
             const loginUserId = req.user.userId;
             // find if the user has like the blog
-            const isLiked = blog.isLike;
+            const alreadyLiked = blog.likes.find(
+                (userId => userId.toString() === loginUserId.toString())
+            );
             // find if the user has dislike the blog
             const alreadyDisliked = blog.dislikes.find(
-                (userId = userId.toString() === loginUserId.toString())
+                (userId => userId.toString() === loginUserId.toString())
             );
 
             if (alreadyDisliked) {
                 await BlogService.updateBlogDetailsById(blogId, { $pull: { dislikes: loginUserId }, isDislike: false });
-            }
-
-            if (isLiked) {
+            } else if (alreadyLiked || blog.isLike) {
                 await BlogService.updateBlogDetailsById(blogId, { $pull: { likes: loginUserId }, isLike: false });
                 return res.sendStatus(200);
             }
@@ -193,17 +193,17 @@ class BlogController {
             // find the login user
             const loginUserId = req.user.userId;
             // find if the user has Dislike the blog
-            const isDisliked = blog.isDislike;
+            const alreadyDisliked = blog.dislikes.find(
+                (userId => userId.toString() === loginUserId.toString())
+            );
             // find if the user has like the blog
             const alreadyLiked = blog.likes.find(
-                (userId = userId.toString() === loginUserId.toString())
+                (userId => userId.toString() === loginUserId.toString())
             );
 
             if (alreadyLiked) {
                 await BlogService.updateBlogDetailsById(blogId, { $pull: { likes: loginUserId }, isLike: false });
-            }
-
-            if (isDisliked) {
+            } else if (alreadyDisliked || blog.isDislike) {
                 await BlogService.updateBlogDetailsById(blogId, { $pull: { dislikes: loginUserId }, isDislike: false });
                 return res.sendStatus(200);
             }

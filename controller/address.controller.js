@@ -106,8 +106,8 @@ class AddressController {
 
     static getAllAddressOfAUser = async (req, res) => {
         try {
-            const { userId } = req.users;
-            const valid = validateMongodbId(id);
+            const { userId } = req.user;
+            const valid = validateMongodbId(userId);
             if (!valid) {
                 return res.status(400).json({
                     "success": false,
