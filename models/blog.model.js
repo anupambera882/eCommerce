@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const { role } = require('./user.model');
 const { modelName } = require('./AllModelName');
 
 const blogSchema = new mongoose.Schema({
@@ -13,7 +12,8 @@ const blogSchema = new mongoose.Schema({
     },
     category: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: modelName.BLOG_CATEGORY
+        ref: modelName.BLOG_CATEGORY,
+        required: true
     },
     numViews: {
         type: Number,

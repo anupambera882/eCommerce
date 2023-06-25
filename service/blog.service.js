@@ -9,19 +9,19 @@ class BlogService {
 
     static getBlogByPK = async (pk, populate = 0) => {
         if (populate) {
-            const blogData = await BlogModel.findOne(pk).populate('likes').populate('dislikes');
+            const blogData = await BlogModel.findOne(pk).populate({ path: 'likes', select: '-_id title' }).populate({ path: 'dislikes', select: '-_id title' }).populate({ path: 'category', select: '-_id title' });
             return blogData;
         }
-        const blogData = await BlogModel.findOne(pk);
+        const blogData = await BlogModel.findOne(pk).populate({ path: 'likes', select: '-_id title' }).populate({ path: 'dislikes', select: '-_id title' }).populate({ path: 'category', select: '-_id title' });
         return blogData;
     }
 
-    static getAllBlog = async (select = 0) => {
-        if (filter) {
-            const blogsData = await BlogModel.find(filter, select).skip(skip).limit(limit);
+    static getAllBlog = async (filter = 0, select = 0) => {
+        if (select) {
+            const blogsData = await BlogModel.find(filter, select).populate({ path: 'likes', select: '-_id title' }).populate({ path: 'dislikes', select: '-_id title' }).populate({ path: 'category', select: '-_id title' });
             return blogsData;
         }
-        const blogsData = await BlogModel.find().skip(skip).limit(limit);
+        const blogsData = await BlogModel.find().populate({ path: 'likes', select: '-_id title' }).populate({ path: 'dislikes', select: '-_id title' }).populate({ path: 'category', select: '-_id title' });
         return blogsData;
     }
 

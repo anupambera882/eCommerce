@@ -12,7 +12,7 @@ class BlogController {
                 imagePath.push(`${image.destination}\\blogs\\${image.filename.replace(/\.[^/.]+$/, '.jpeg')}`);
             });
 
-            const blogCategory = BlogCategoryService.getBlogCategoryByPK({ title: category });
+            const blogCategory = await BlogCategoryService.getBlogCategoryByPK({ title: category });
             const newBlog = {
                 title: title,
                 description: description,
@@ -119,8 +119,7 @@ class BlogController {
 
             return res.status(201).json({
                 success: true,
-                message: 'Successfully delete blog',
-                blog: blog
+                message: 'Successfully delete blog'
             })
         } catch (err) {
             return res.status(500).json({

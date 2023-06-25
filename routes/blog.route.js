@@ -9,7 +9,7 @@ const { role } = require('../models/user.model');
 
 // Public route
 blogRoute.get('/get-blog/:blogId', BlogController.getBlog);
-blogRoute.get('get-all-blog/', BlogController.getAllBlog);
+blogRoute.get('/get-all-blog', BlogController.getAllBlog);
 
 // protected route
 blogRoute.post('/add-blog', [authMiddleware, authorizeRole([role.ADMIN]), upload.fields(fields), multerErrorHandlerMiddleware, blogImgResize], BlogController.createBlog);
