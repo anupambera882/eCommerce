@@ -24,7 +24,13 @@ class BlogCategoryController {
         try {
             const { id } = req.params;
             const { title } = req.body;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const updateCategory = await BlogCategoryService.updateBlogCategoryDetailsById(id, { title: title });
 
             return res.status(201).json({
@@ -44,7 +50,13 @@ class BlogCategoryController {
     static deleteBlogCategory = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await BlogCategoryService.updateBlogCategoryDetailsById(id, { isDeleted: true });
 
             return res.status(201).json({
@@ -63,7 +75,13 @@ class BlogCategoryController {
     static getBlogCategoryById = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const blogCategory = await BlogCategoryService.getBlogCategoryByPK({ _id: id });
 
             return res.status(201).json({
@@ -82,7 +100,13 @@ class BlogCategoryController {
     static getAllBlogCategory = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const allCategory = await BlogCategoryService.getAllBlogCategory();
 
             return res.status(201).json({

@@ -23,7 +23,13 @@ class EnquiryController {
     static updateEnquiry = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const update = await EnquiryService.updateEnquiryDetailsById(id, req.body);
 
             return res.status(201).json({
@@ -43,7 +49,13 @@ class EnquiryController {
     static deleteEnquiry = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await EnquiryService.updateEnquiryDetailsById(id, { isDeleted: true });
 
             return res.status(201).json({
@@ -62,7 +74,13 @@ class EnquiryController {
     static getEnquiryById = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const Enquiry = await EnquiryService.getEnquiryByPK({ _id: id });
 
             return res.status(201).json({
@@ -81,7 +99,13 @@ class EnquiryController {
     static getAllEnquiry = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const all = await EnquiryService.getAllEnquiry();
 
             return res.status(201).json({

@@ -80,7 +80,13 @@ class ProductController {
         try {
             const { productId } = req.params;
             let { title, slug } = req.body;
-            validateMongodbId(productId, res);
+            const valid = validateMongodbId(productId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             if (title) {
                 if (slug === undefined) {
                     slug = title.toLowerCase().split(" ").join("-");
@@ -167,7 +173,13 @@ class ProductController {
     static getProductById = async (req, res) => {
         try {
             const { productId } = req.params;
-            validateMongodbId(productId, res);
+            const valid = validateMongodbId(productId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const product = await ProductService.getProductByPK({ _id: productId });
             if (!product) {
                 return res.status(404).json({
@@ -192,7 +204,13 @@ class ProductController {
     static deleteProductById = async (req, res) => {
         try {
             const { productId } = req.params;
-            validateMongodbId(productId, res);
+            const valid = validateMongodbId(productId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const productSellerId = await ProductService.getProductByPK({ _id: productId }, { sellerId: 1 });
             if (req.user.userId !== productSellerId.sellerId) {
                 return res.status(400).json({
@@ -224,6 +242,13 @@ class ProductController {
         try {
             const { userId } = req.user;
             const { productId } = req.body;
+            const valid = validateMongodbId(productId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const user = await UserService.getUserByPK({ _id: userId });
 
             const alreadyAdded = user.wishList.find((id) => {
@@ -256,6 +281,13 @@ class ProductController {
         try {
             const { userId } = req.user;
             const { star, productId, comment } = req.body;
+            const valid = validateMongodbId(productId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const product = await ProductService.getProductByPK({ _id: productId });
 
             let alreadyRated = product.rating.find((userId) => {
@@ -298,7 +330,13 @@ class ProductController {
     static uploadImages = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
 
             const product = await ProductService.updateProductDetailsById(id, { thumbnail: thumbnail, images: imagePath });
             return res.status(201).json({

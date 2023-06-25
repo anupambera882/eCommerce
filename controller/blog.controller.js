@@ -32,7 +32,13 @@ class BlogController {
     static updateBlog = async (req, res) => {
         try {
             const { blogId } = req.params;
-            validateMongodbId(blogId, res);
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const updateBlogData = await BlogService.updateBlogDetailsById(blogId, { $set: req.body });
             return res.status(201).json({
                 success: true,
@@ -53,7 +59,13 @@ class BlogController {
     static getBlog = async (req, res) => {
         try {
             const { blogId } = req.params;
-            validateMongodbId(blogId, res)
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await BlogService.updateBlogDetailsById(blogId, { $inc: { numViews: 1 } });
             const blog = await BlogService.getBlogByPK({ _id: blogId },1);
 
@@ -89,7 +101,13 @@ class BlogController {
     static deleteBlog = async (req, res) => {
         try {
             const { blogId } = req.params;
-            validateMongodbId(blogId, res);
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const blog = BlogService.updateBlogDetailsById(blogId, { $set: { isDeleted: true } });
 
             return res.status(201).json({
@@ -109,7 +127,13 @@ class BlogController {
     static likeBlog = async (req, res) => {
         try {
             const { blogId } = req.body;
-            validateMongodbId(blogId);
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
 
             // Find the blog which you want to like
             const blog = await BlogService.getBlogByPK({ _id: blogId });
@@ -150,7 +174,13 @@ class BlogController {
     static dislikeBlog = async (req, res) => {
         try {
             const { blogId } = req.body;
-            validateMongodbId(blogId);
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
 
             // Find the blog which you want to dislike
             const blog = await BlogService.getBlogByPK({ _id: blogId });
@@ -190,7 +220,13 @@ class BlogController {
     static uploadImages = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(blogId);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             let { images } = req.files;
             thumbnail = thumbnail[0].path;
             let imagePath;

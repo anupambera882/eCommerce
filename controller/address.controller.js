@@ -31,7 +31,13 @@ class AddressController {
     static updateAddress = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const update = await AddressService.updateAddressDetailsById(id, req.body);
 
             return res.status(201).json({
@@ -51,7 +57,13 @@ class AddressController {
     static deleteAddress = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await AddressService.updateAddressDetailsById(id, { isDeleted: true });
 
             return res.status(201).json({
@@ -70,7 +82,13 @@ class AddressController {
     static getAddressById = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const Address = await AddressService.getAddressByPK({ _id: id });
 
             return res.status(201).json({
@@ -89,7 +107,13 @@ class AddressController {
     static getAllAddressOfAUser = async (req, res) => {
         try {
             const { userId } = req.users;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const all = await AddressService.getAUserAllAddressByUserId(userId);
 
             return res.status(201).json({

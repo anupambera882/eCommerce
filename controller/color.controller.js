@@ -1,4 +1,5 @@
 const ColorService = require("../service/color.service");
+const validateMongodbId = require("../utils/validateMongodbId.utils");
 
 class ColorController {
     static createColor = async (req, res) => {
@@ -24,7 +25,13 @@ class ColorController {
         try {
             const { id } = req.params;
             const { title } = req.body;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const update = await ColorService.updateColorDetailsById(id, { title: title });
 
             return res.status(201).json({
@@ -44,7 +51,13 @@ class ColorController {
     static deleteColor = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             await ColorService.updateColorDetailsById(id, { isDeleted: true });
 
             return res.status(201).json({
@@ -63,7 +76,13 @@ class ColorController {
     static getColorById = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const Color = await ColorService.getColorByPK({ _id: id });
 
             return res.status(201).json({
@@ -82,7 +101,13 @@ class ColorController {
     static getAllColor = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
             const all = await ColorService.getAllColor();
 
             return res.status(201).json({

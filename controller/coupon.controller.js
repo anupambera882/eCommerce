@@ -45,7 +45,13 @@ class CouponController {
     static updateCoupon = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
 
             const coupon = await CouponService.updateCouponDetailsById(id, req.body);
             return res.status(201).json({
@@ -64,7 +70,13 @@ class CouponController {
     static deleteCoupon = async (req, res) => {
         try {
             const { id } = req.params;
-            validateMongodbId(id, res);
+            const valid = validateMongodbId(id);
+            if (!valid) {
+                return res.status(400).json({
+                    "success": false,
+                    "message": "This id is not valid or not found"
+                })
+            }
 
             await CouponService.updateCouponDetailsById(id, { isDeleted: true });
             return res.status(201).json({
