@@ -10,7 +10,7 @@ productCategoryRoute.get('/get-product-category/:id', ProductCategoryController.
 productCategoryRoute.get('/get-all-product-category', ProductCategoryController.getAllProductCategory)
 
 // protected route
-productCategoryRoute.post('/add-new-category', [authMiddleware, authorizeRole([role.ADMIN])], ProductCategoryController.createProductCategory)
+productCategoryRoute.post('/add-category', [authMiddleware, authorizeRole([role.ADMIN])], ProductCategoryController.createProductCategory)
 productCategoryRoute.post('/update-category/:id', [authMiddleware, authorizeRole([role.ADMIN])], ProductCategoryController.updateProductCategory)
 productCategoryRoute.post('/delete-category/:id', [authMiddleware, authorizeRole([role.ADMIN])], ProductCategoryController.deleteProductCategory)
 

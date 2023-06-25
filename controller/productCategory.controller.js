@@ -7,6 +7,15 @@ class ProductCategoryController {
             const { title } = req.body;
             const newProductCategory = await ProductCategoryService.createNewProductCategory({ title: title });
 
+            // check duplicate entry
+            const productCategory = await ProductCategoryService.getProductCategoryByPK({ title: title });
+            if (productCategory) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'it\'s already exist'
+                });
+            }
+
             return res.status(201).json({
                 success: true,
                 message: 'New product category created successfully',

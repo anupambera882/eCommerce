@@ -5,6 +5,13 @@ class ColorController {
     static createColor = async (req, res) => {
         try {
             const { title } = req.body;
+            const Color = await ColorService.getColorByPK({ title: title });
+            if (Color) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'it\'s already exist'
+                });
+            }
             const newColor = await ColorService.createNewColor({ title: title });
 
             return res.status(201).json({

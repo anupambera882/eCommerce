@@ -6,6 +6,13 @@ class CouponController {
     static createCoupon = async (req, res) => {
         try {
             const { name, expiry, discount } = req.body;
+            const Coupon = await CouponService.getCouponByPk({ name: name });
+            if (Coupon) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'it\'s already exist'
+                });
+            }
             const newCoupon = await CouponService.createNewCoupon({
                 name: name,
                 expiry: expiry,

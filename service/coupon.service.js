@@ -7,6 +7,11 @@ class CouponService {
         return newCouponSave;
     }
 
+    static getCouponByPk = async (pk) => {
+        const coupon = await CouponModel.findOne(pk);
+        return coupon;
+    }
+
     static getAllCoupon = async () => {
         const couponsData = await CouponModel.find();
         return couponsData;

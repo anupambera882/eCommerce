@@ -5,6 +5,15 @@ class BrandController {
     static createBrand = async (req, res) => {
         try {
             const { title } = req.body;
+
+            // check duplicate entry
+            const Brand = await BrandService.getBrandByPK({ title: title });
+            if (Brand) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'it\'s already exist'
+                });
+            }
             const newBrand = await BrandService.createNewBrand({ title: title });
 
             return res.status(201).json({

@@ -5,6 +5,15 @@ class BlogCategoryController {
     static createBlogCategory = async (req, res) => {
         try {
             const { title } = req.body;
+
+            // check duplicate entry
+            const blogCategory = await BlogCategoryService.getBlogCategoryByPK({ title: title });
+            if (blogCategory) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'it\'s already exist'
+                });
+            }
             const newBlogCategory = await BlogCategoryService.createNewBlogCategory({ title: title });
             return res.status(201).json({
                 success: true,
