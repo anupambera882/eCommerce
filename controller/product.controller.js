@@ -4,7 +4,6 @@ const ProductService = require("../service/product.service");
 const BrandService = require("../service/brand.service");
 const ColorService = require("../service/color.service");
 const UserService = require("../service/user.service");
-// const { deleteFile } = require("../utils/deleteFile.util");
 
 
 class ProductController {
@@ -131,7 +130,7 @@ class ProductController {
                 req.body.color = color._id;
             }
 
-            const product = await ProductService.updateProductDetailsById(productId, req.body);
+            const product = await ProductService.updateProductDetailsById(productId,{$set: req.body});
 
             return res.status(201).json({
                 success: true,
@@ -224,14 +223,14 @@ class ProductController {
                     message: 'You are not the owner in this product'
                 });
             }
-            const product = await ProductService.updateProductDetailsById(productId, { isDeleted: true });
+            const product = await ProductService.updateProductDetailsById(productId,{$set: { isDeleted: true }});
             if (!product) {
                 return res.status(404).json({
                     success: false,
                     message: 'Product not found'
                 });
             }
-            return res.json({
+            return res.status(200).json({
                 success: true,
                 message: 'Product deleted successfully'
             });
@@ -256,23 +255,20 @@ class ProductController {
                 })
             }
             const user = await UserService.getUserByPK({ _id: userId });
-
-            const alreadyAdded = user.wishList.find((id) => {
-                id.toString() === productId
-            })
+            const alreadyAdded = user.wishList.find((id) => id.toString() === productId.toString());
 
             if (alreadyAdded) {
                 await UserService.updateUserDetailsById(userId, { $pull: { wishList: productId } });
-                return res.json({
+                return res.status(200).json({
                     success: true,
                     message: 'product remove successfully'
                 });
             }
 
             await UserService.updateUserDetailsById(userId, { $push: { wishList: productId } });
-            return res.json({
+            return res.status(200).json({
                 success: true,
-                message: 'product remove successfully'
+                message: 'product add successfully'
             });
         } catch (err) {
             return res.status(500).json({
@@ -296,20 +292,27 @@ class ProductController {
             }
             const product = await ProductService.getProductByPK({ _id: productId });
 
-            let alreadyRated = product.rating.find((userId) => {
-                userId.postedBy.toString() === userId.toString()
-            });
+            console.log(product);
+
+            const alreadyRated = product.rating.find((userId) => userId.postedBy.toString() === userId.toString());
+
+            console.log(product.rating);
+            console.log(alreadyRated);
 
             if (alreadyRated) {
-                const updateRating = await ProductService.updateProductDetailsById(productId, { $set: { 'rating.$.star': star, 'rating.$.comment': comment } })
+                const updateRating = await ProductService.updateProductDetailsByPk({ 'rating.$.postedBy': userId }, { $set: { 'rating.$.star': star, 'rating.$.comment': comment } })
 
-                return res.json({
+                console.log('here i am 1');
+
+                return res.status(200).json({
                     success: true,
                     updateRating: updateRating
                 })
             }
 
-            await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star, comment: comment, postedBy: userId } } });
+            const a = await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star, comment: comment, postedBy: userId } } });
+            console.log(a);
+            console.log(typeof(star));
             const getAllRating = await ProductService.getProductByPK({ _id: productId });
 
             let totalRating = getAllRating.rating.length;
@@ -317,7 +320,7 @@ class ProductController {
                 .map((item) => item.star)
                 .reduce((prev, curr) => prev + curr, 0);
             let actualRating = Math.round(ratingSum / totalRating);
-            let finalProduct = ProductService.updateProductDetailsById(productId, { $set: { totalRating: actualRating } });
+            let finalProduct = await ProductService.updateProductDetailsById(productId, { $set: { totalRating: actualRating } });
 
             return res.status(200).json({
                 success: true,

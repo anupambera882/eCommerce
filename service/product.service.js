@@ -26,8 +26,13 @@ class ProductService {
     }
 
     static updateProductDetailsById = async (id, updateData) => {
-        const updateProductData = await ProductModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+        const updateProductData = await ProductModel.findByIdAndUpdate(id, { updateData }, { new: true });
         return updateProductData;
+    }
+
+    static updateProductDetailsByPk = async (pk, updateData) => {
+        const updateProduct = await ProductModel.findOneAndUpdate(pk, updateData, { new: true });
+        return updateProduct;
     }
 }
 
