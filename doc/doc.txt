@@ -1,0 +1,2 @@
+This a ecommerce side where a seller/admin can sell her product and write a blog about product or create blog about upcoming event
+In this platform user can buy listed product, and give a rating / feedback about product if any enquiry then it can list user 
