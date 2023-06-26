@@ -555,7 +555,7 @@ class UserController {
     static getWishList = async (req, res) => {
         try {
             const { userId } = req.user;
-            const user = UserService.getUserByPK({ _id: userId }, populate('wishList'));
+            const user = await UserService.getUserByPK({ _id: userId }, 1);
 
             return res.status(202).json({
                 success: true,
@@ -732,7 +732,7 @@ class UserController {
                     message: 'created cash order failed'
                 });
             }
-            const user = await UserService.getUserByPK({ _id: userId });
+            await UserService.getUserByPK({ _id: userId });
             let userCart = await CartModel.findOne({ orderBy: userId });
             let finalAmount = 0;
             if (couponApplied && userCart.totalAfterDiscount) {
@@ -741,18 +741,21 @@ class UserController {
                 finalAmount = userCart.cartTotal;
             }
 
-            let newOrder = await new OrderModel.$where({
+            let newOrder = new OrderModel({
                 products: userCart.products,
                 paymentIntent: {
                     id: uniqid(),
                     method: 'COD',
+                    amount: finalAmount,
                     status: 'Cash On Delivery',
                     created: Date.now(),
                     currency: 'USD'
                 },
                 orderBy: userId,
                 orderStatus: 'Cash On Delivery'
-            }).save();
+            });
+
+            await newOrder.save();
 
             let update = userCart.products.map((item) => {
                 return {
@@ -760,23 +763,29 @@ class UserController {
                         filter: { _id: item.product._id },
                         update: { $inc: { quantity: -item.count, sold: +item.count } }
                     }
-                }
+                };
             });
-            const updated = await ProductModel.bulkWrite(update, {});
-            res.json({ message: success });
+
+            await ProductModel.bulkWrite(update, {});
+
+            res.json({
+                success: true,
+                message: 'Order created successfully'
+            });
         } catch (err) {
             return res.status(500).json({
                 success: false,
-                message: "Unable to unable to fetch data",
+                message: 'Unable to fetch data',
                 errMessage: err.message
             });
         }
-    }
+    };
+
 
     static getOrder = async (req, res) => {
         try {
             const { userId } = req.user;
-            const userOrders = await OrderModel.findOne({ orderBy: userId }).populate('products.product').exec();
+            const userOrders = await OrderModel.find({ orderBy: userId }).populate('products.product').exec();
             res.json(userOrders);
         } catch (err) {
             return res.status(500).json({

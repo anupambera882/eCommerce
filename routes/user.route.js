@@ -28,6 +28,11 @@ authRouter.get('/logout-all-account', [authMiddleware], UserController.logoutAll
 authRouter.get('/get-WishList', [authMiddleware], UserController.getWishList);
 authRouter.post('/user-cart', [authMiddleware], UserController.userCart);
 authRouter.get('/get-user-cart', [authMiddleware], UserController.getUserCart);
+authRouter.post('/empty-user-cart', [authMiddleware], UserController.emptyCart);
+authRouter.post('/apply-coupon-on-cart', [authMiddleware], UserController.applyCoupon);
+authRouter.post('/create-order', [authMiddleware], UserController.createOrder);
+authRouter.get('/get-order', [authMiddleware], UserController.getOrder);
+authRouter.post('/update-order-status/:id', [authMiddleware, authorizeRole([role.ADMIN])], UserController.updateOrderStatus);
 
 
 module.exports = authRouter;

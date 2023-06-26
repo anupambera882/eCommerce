@@ -9,7 +9,7 @@ class UserService {
 
     static getUserByPK = async (pk,populated = 0) => {
         if (populated) {
-            const userData = await UserModel.findOne(pk).populated;
+            const userData = await UserModel.findOne(pk).populate('wishList');
             return userData;
         }
         const userData = await UserModel.findOne(pk);
