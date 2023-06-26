@@ -1,10 +1,10 @@
 const uniqid = require('uniqid');
 const { generateToken, verifyToken } = require('../config/jwt.config');
 const validateMongodbId = require('../utils/validateMongodbId.utils');
+const CouponService = require('../service/coupon.service');
 const { transporter } = require('../config/email.config');
 const ProductModel = require('../models/product.model');
 const UserService = require('../service/user.service');
-const CouponModel = require('../models/coupon.model');
 const OrderModel = require('../models/order.model');
 const CartModel = require('../models/cart.model');
 const { role } = require('../models/user.model');
@@ -697,7 +697,7 @@ class UserController {
         try {
             const { coupon } = req.body;
             const { userId } = req.user;
-            const validCoupon = await CouponModel.findOne({ name: coupon });
+            const validCoupon = await CouponService.getCouponByPk({ name: coupon })
             if (validCoupon === null) {
                 return res.json({
                     success: false,

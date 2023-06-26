@@ -1,6 +1,6 @@
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
-const authRoute = require('./auth.route');
+const userRoute = require('./user.route');
 const productRoute = require('./product.route');
 const blogRoute = require('./blog.route');
 const productCategoryRoute = require('./productCategory.route');
@@ -17,13 +17,9 @@ module.exports = (app) => {
     app.use(bodyParser.urlencoded({ extended: true }));
     app.use(cookieParser());
 
-    // Route For testing
-    app.get('/', (req, res) => {
-        res.send('Hello World!');
-    });
 
     // All route
-    app.use("/api/user", authRoute);
+    app.use("/api/user", userRoute);
     app.use('/api/product', productRoute);
     app.use('/api/address', addressRoute);
     app.use('/api/blog', blogRoute);

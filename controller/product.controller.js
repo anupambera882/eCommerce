@@ -130,7 +130,7 @@ class ProductController {
                 req.body.color = color._id;
             }
 
-            const product = await ProductService.updateProductDetailsById(productId,{$set: req.body});
+            const product = await ProductService.updateProductDetailsById(productId, { $set: req.body });
 
             return res.status(201).json({
                 success: true,
@@ -223,7 +223,7 @@ class ProductController {
                     message: 'You are not the owner in this product'
                 });
             }
-            const product = await ProductService.updateProductDetailsById(productId,{$set: { isDeleted: true }});
+            const product = await ProductService.updateProductDetailsById(productId, { $set: { isDeleted: true } });
             if (!product) {
                 return res.status(404).json({
                     success: false,
@@ -286,35 +286,20 @@ class ProductController {
             const valid = validateMongodbId(productId);
             if (!valid) {
                 return res.status(400).json({
-                    "success": false,
-                    "message": "This id is not valid or not found"
+                    success: false,
+                    message: "This id is not valid or not found"
                 })
             }
             const product = await ProductService.getProductByPK({ _id: productId });
 
-            console.log(product);
-
-            const alreadyRated = product.rating.find((userId) => userId.postedBy.toString() === userId.toString());
-
-            console.log(product.rating);
-            console.log(alreadyRated);
-
+            const alreadyRated = product.rating.find((rating) => rating.postedBy.toString() === userId.toString());
             if (alreadyRated) {
-                const updateRating = await ProductService.updateProductDetailsByPk({ 'rating.$.postedBy': userId }, { $set: { 'rating.$.star': star, 'rating.$.comment': comment } })
-
-                console.log('here i am 1');
-
-                return res.status(200).json({
-                    success: true,
-                    updateRating: updateRating
-                })
+                await ProductService.updateProductDetailsByPk({ 'rating.postedBy': userId }, { $set: { 'rating.$.star': star, 'rating.$.comment': comment } });
+            } else {
+                await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star, comment: comment, postedBy: userId } } });
             }
 
-            const a = await ProductService.updateProductDetailsById(productId, { $push: { rating: { star: star, comment: comment, postedBy: userId } } });
-            console.log(a);
-            console.log(typeof(star));
             const getAllRating = await ProductService.getProductByPK({ _id: productId });
-
             let totalRating = getAllRating.rating.length;
             let ratingSum = getAllRating.rating
                 .map((item) => item.star)
@@ -326,7 +311,6 @@ class ProductController {
                 success: true,
                 finalProduct: finalProduct
             });
-
         } catch (err) {
             return res.status(500).json({
                 success: false,

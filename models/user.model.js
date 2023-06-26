@@ -6,7 +6,6 @@ const { modelName } = require('./AllModelName');
 const role = {
     ADMIN: 'admin',
     USER: 'user',
-    // SELLER: 'seller'
 }
 
 const userSchema = new mongoose.Schema({
