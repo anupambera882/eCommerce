@@ -8,10 +8,14 @@ const UserService = require('../service/user.service');
 const OrderModel = require('../models/order.model');
 const CartModel = require('../models/cart.model');
 const { role } = require('../models/user.model');
+const BaseController = require('./base.controller');
 const refreshTokenMaxSize = 5;
 const oneDay = 1000 * 60 * 60 * 24;
 
-class UserController {
+class UserController extends BaseController {
+    constructor(success, message, data, statusCode) {
+        super(success, message, data, statusCode);
+    }
     static createUser = async (req, res) => {
         try {
             const { firstName, lastName, email, mobile, password, role } = req.body;
@@ -53,23 +57,18 @@ class UserController {
                 expires: new Date(Date.now() + 365 * oneDay),
                 path: '/',
             });
-            return res.status(201).json({
-                success: true,
-                successMessage: "User register successfully",
-                data: {
-                    id: newUserSave._id,
-                    firstName: newUserSave.firstName,
-                    lastName: newUserSave.lastName,
-                    email: newUserSave.email,
-                    mobile: newUserSave.mobile,
-                }
-            });
+
+            this.statusCode = 201;
+            this.success = true;
+            this.message = "User register successfully";
+            this.data = newUserSave;
+            this.sendResponse(res);
         } catch (err) {
-            return res.status(500).json({
-                success: false,
-                message: "Unable to Register",
-                errMessage: err.message
-            });
+            this.statusCode = 500;
+            this.success = false;
+            this.message = err.message;
+            this.data = {};
+            BaseController.sendResponse(res);
         }
     };
 
